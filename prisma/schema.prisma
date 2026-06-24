@@ -1,0 +1,216 @@
+// PoE2 Marketplace — core schema (Phase 0).
+// Prisma 7 "prisma-client" generator; datasource url lives in prisma.config.ts.
+// Mirrors docs/03-technical-architecture.md §4.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  BUYER
+  SELLER
+  MODERATOR
+  ADMIN
+}
+
+enum SellerType {
+  BOOSTER
+  SUPPLIER
+  COACH
+  TEAM
+}
+
+enum KycStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum Fulfillment {
+  PARTY_PLAY
+  TRADE
+  SESSION
+  PILOTING // post-MVP
+}
+
+enum LeagueMode {
+  SOFTCORE
+  HARDCORE
+  SSF_SOFTCORE
+  SSF_HARDCORE
+}
+
+enum Platform {
+  PC
+  PS5
+  XBOX
+}
+
+enum OrderStatus {
+  CREATED
+  PAID
+  IN_PROGRESS
+  DELIVERED
+  COMPLETED
+  DISPUTED
+  REFUNDED
+  CANCELLED
+}
+
+enum DisputeState {
+  OPEN
+  RESOLVED_REFUND
+  RESOLVED_RELEASE
+  RESOLVED_PARTIAL
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  passwordHash  String? // null for future OAuth-only users
+  roles         Role[]         @default([BUYER])
+  locale        String         @default("en")
+  twoFactor     Boolean        @default(false)
+  sellerProfile SellerProfile?
+  ordersBought  Order[]        @relation("buyer")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model SellerProfile {
+  id           String     @id @default(cuid())
+  userId       String     @unique
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type         SellerType
+  displayName  String
+  kycStatus    KycStatus  @default(NONE)
+  kycRef       String? // provider token only — never store documents
+  stripeAcctId String? // Stripe Connect account id
+  ratingAvg    Float      @default(0)
+  ratingCount  Int        @default(0)
+  listings     Listing[]
+  createdAt    DateTime   @default(now())
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  slug     String    @unique // currency, items, leveling, carries, atlas, challenges, crafting, coaching
+  nameEn   String
+  nameRu   String
+  listings Listing[]
+}
+
+model Listing {
+  id            String        @id @default(cuid())
+  sellerId      String
+  seller        SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  categoryId    String
+  category      Category      @relation(fields: [categoryId], references: [id])
+  titleEn       String
+  titleRu       String
+  descriptionEn String        @default("")
+  descriptionRu String        @default("")
+  priceCents    Int
+  currency      String        @default("usd")
+  etaHours      Int
+  fulfillment   Fulfillment
+  platform      Platform
+  league        String
+  leagueMode    LeagueMode
+  active        Boolean       @default(true)
+  orders        Order[]
+  createdAt     DateTime      @default(now())
+
+  @@index([categoryId])
+  @@index([sellerId])
+}
+
+model Order {
+  id           String        @id @default(cuid())
+  listingId    String
+  listing      Listing       @relation(fields: [listingId], references: [id])
+  buyerId      String
+  buyer        User          @relation("buyer", fields: [buyerId], references: [id])
+  status       OrderStatus   @default(CREATED)
+  amountCents  Int
+  feeCents     Int // 15% flat
+  escrow       EscrowTxn?
+  conversation Conversation?
+  review       Review?
+  dispute      Dispute?
+  deliveredAt  DateTime? // starts the 72h auto-release timer
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([buyerId])
+  @@index([status])
+}
+
+model EscrowTxn {
+  id               String    @id @default(cuid())
+  orderId          String    @unique
+  order            Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  stripePaymentId  String // PaymentIntent
+  stripeTransferId String? // transfer to seller on release
+  heldCents        Int
+  releasedAt       DateTime?
+  refundedAt       DateTime?
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  orderId   String    @unique
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  messages  Message[]
+  createdAt DateTime  @default(now())
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  body           String
+  attachmentUrl  String?
+  system         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  rating    Int
+  body      String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model Dispute {
+  id             String       @id @default(cuid())
+  orderId        String       @unique
+  order          Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  state          DisputeState @default(OPEN)
+  reason         String
+  resolutionNote String?
+  createdAt      DateTime     @default(now())
+}
+
+model AdminAction {
+  id        String   @id @default(cuid())
+  actorId   String
+  action    String
+  targetId  String
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([actorId])
+}

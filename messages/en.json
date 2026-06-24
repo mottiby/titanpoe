@@ -1,0 +1,64 @@
+{
+  "HomePage": {
+    "title": "PoE2 Marketplace",
+    "tagline": "Buy and sell Path of Exile 2 services safely — escrow-protected.",
+    "cta": "Browse services"
+  },
+  "Nav": {
+    "catalog": "Catalog",
+    "sell": "Sell",
+    "signIn": "Sign in"
+  },
+  "Auth": {
+    "signInTitle": "Sign in",
+    "signUpTitle": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name (optional)",
+    "signInCta": "Sign in",
+    "signUpCta": "Sign up",
+    "noAccount": "No account?",
+    "haveAccount": "Already have an account?"
+  },
+  "Account": {
+    "title": "Your account",
+    "roles": "Roles",
+    "signOut": "Sign out"
+  },
+  "Seller": {
+    "becomeTitle": "Become a seller",
+    "becomeSubtitle": "Create your seller profile to list services.",
+    "displayName": "Display name",
+    "typeBooster": "Booster",
+    "typeSupplier": "Currency / Item supplier",
+    "typeCoach": "Coach",
+    "typeTeam": "Team",
+    "becomeCta": "Create seller profile",
+    "type": "Type",
+    "newListing": "New listing",
+    "noListings": "No listings yet.",
+    "createListingTitle": "Create a listing",
+    "listingTitleEn": "Title (English)",
+    "listingTitleRu": "Title (Russian)",
+    "category": "Category",
+    "price": "Price (USD)",
+    "eta": "Delivery time (hours)",
+    "fulfillment": "Fulfillment",
+    "fulfillmentPartyPlay": "Party play",
+    "fulfillmentTrade": "Trade",
+    "fulfillmentSession": "Session (coaching)",
+    "platform": "Platform",
+    "league": "League",
+    "leagueMode": "League mode",
+    "createCta": "Publish listing"
+  },
+  "Catalog": {
+    "title": "Catalog",
+    "all": "All",
+    "by": "by",
+    "eta": "ETA",
+    "hours": "h",
+    "empty": "No listings yet — be the first to create one.",
+    "back": "← Back to catalog"
+  }
+}

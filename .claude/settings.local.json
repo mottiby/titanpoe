@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git --version)",
+      "Bash(gh --version)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Read(//tmp/agent-skills/**)",
+      "Read(//tmp/agent-skills/skills/**)",
+      "Read(//tmp/agent-skills/skills/test-driven-development/**)",
+      "Read(//tmp/agent-skills/skills/using-agent-skills/**)",
+      "Bash(mkdir -p ~/.claude/skills)",
+      "Bash(cp -r /tmp/agent-skills/skills/* ~/.claude/skills/)",
+      "Read(//c/Users/Yan_Boss/.claude/**)",
+      "WebFetch(domain:overgear.com)",
+      "WebSearch",
+      "Bash(npm -v)",
+      "Bash(echo \"=== D:\\\\\\\\POE2 contents ===\")",
+      "WebFetch(domain:next-intl.dev)"
+    ]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "HomePage": {
+    "title": "PoE2 Маркетплейс",
+    "tagline": "Безопасная покупка и продажа услуг по Path of Exile 2 — с эскроу-защитой.",
+    "cta": "Смотреть услуги"
+  },
+  "Nav": {
+    "catalog": "Каталог",
+    "sell": "Продавать",
+    "signIn": "Войти"
+  },
+  "Auth": {
+    "signInTitle": "Вход",
+    "signUpTitle": "Регистрация",
+    "email": "Email",
+    "password": "Пароль",
+    "name": "Имя (необязательно)",
+    "signInCta": "Войти",
+    "signUpCta": "Зарегистрироваться",
+    "noAccount": "Нет аккаунта?",
+    "haveAccount": "Уже есть аккаунт?"
+  },
+  "Account": {
+    "title": "Ваш аккаунт",
+    "roles": "Роли",
+    "signOut": "Выйти"
+  },
+  "Seller": {
+    "becomeTitle": "Стать продавцом",
+    "becomeSubtitle": "Создайте профиль продавца, чтобы публиковать услуги.",
+    "displayName": "Отображаемое имя",
+    "typeBooster": "Бустер",
+    "typeSupplier": "Поставщик валюты / предметов",
+    "typeCoach": "Коуч",
+    "typeTeam": "Команда",
+    "becomeCta": "Создать профиль продавца",
+    "type": "Тип",
+    "newListing": "Новый листинг",
+    "noListings": "Пока нет листингов.",
+    "createListingTitle": "Создать листинг",
+    "listingTitleEn": "Название (английский)",
+    "listingTitleRu": "Название (русский)",
+    "category": "Категория",
+    "price": "Цена (USD)",
+    "eta": "Срок выполнения (часы)",
+    "fulfillment": "Способ выполнения",
+    "fulfillmentPartyPlay": "Совместная игра",
+    "fulfillmentTrade": "Трейд",
+    "fulfillmentSession": "Сессия (коучинг)",
+    "platform": "Платформа",
+    "league": "Лига",
+    "leagueMode": "Режим лиги",
+    "createCta": "Опубликовать листинг"
+  },
+  "Catalog": {
+    "title": "Каталог",
+    "all": "Все",
+    "by": "от",
+    "eta": "Срок",
+    "hours": "ч",
+    "empty": "Пока нет листингов — создайте первый.",
+    "back": "← Назад в каталог"
+  }
+}

@@ -6,6 +6,7 @@ import { auth } from '@/auth';
 import { getCategories } from '@/lib/sellers/queries';
 import { getCartCount, getUserBalance } from '@/lib/cart/queries';
 import { formatPrice } from '@/lib/format';
+import { SearchBox } from '@/components/marketplace/search-box';
 import { categoryIcon } from '@/components/marketplace/category-icons';
 
 export async function Header() {
@@ -77,6 +78,12 @@ export async function Header() {
           ))}
         </nav>
 
+        <SearchBox
+          locale={active}
+          placeholder={tc('searchPlaceholder')}
+          className="hidden flex-1 lg:block lg:max-w-xs"
+        />
+
         <div className="flex items-center gap-3">
           {userId && (
             <Link
@@ -128,7 +135,10 @@ export async function Header() {
               <Menu className="size-4" />
               <span className="sr-only">Menu</span>
             </summary>
-            <div className="absolute right-0 z-50 mt-2 w-56 rounded-lg glass p-2 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.7)]">
+            <div className="absolute right-0 z-50 mt-2 w-60 rounded-lg glass p-2 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.7)]">
+              <div className="px-1 pb-2">
+                <SearchBox locale={active} placeholder={tc('searchPlaceholder')} />
+              </div>
               <Link
                 href="/catalog"
                 className="block rounded-md px-3 py-2 text-sm hover:bg-muted"

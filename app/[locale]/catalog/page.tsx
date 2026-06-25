@@ -3,16 +3,16 @@ import { PackageSearch } from 'lucide-react';
 import {
   getCatalog,
   getCategories,
+  getCategoryCounts,
   type CatalogSort,
 } from '@/lib/sellers/queries';
 import { CategoryFilter } from '@/components/marketplace/category-filter';
+import { CategorySidebar } from '@/components/marketplace/category-sidebar';
 import { CatalogControls } from '@/components/marketplace/catalog-controls';
+import { FeatureBanner } from '@/components/marketplace/feature-banner';
 import { ListingCard } from '@/components/marketplace/listing-card';
 import { EmptyState } from '@/components/marketplace/empty-state';
-import {
-  categoryTint,
-  categoryIcon,
-} from '@/components/marketplace/category-icons';
+import { categoryTint, categoryIcon } from '@/components/marketplace/category-icons';
 import { Stagger, StaggerItem } from '@/components/motion/motion';
 
 type Props = {
@@ -22,23 +22,28 @@ type Props = {
     platform?: string;
     leagueMode?: string;
     sort?: string;
+    q?: string;
   }>;
 };
 
+const BANNER_SLUGS = ['carries', 'currency', 'leveling'];
+
 export default async function CatalogPage({ params, searchParams }: Props) {
   const { locale } = await params;
-  const { category, platform, leagueMode, sort } = await searchParams;
+  const { category, platform, leagueMode, sort, q } = await searchParams;
   setRequestLocale(locale);
 
   const t = await getTranslations('Catalog');
-  const [listings, categories] = await Promise.all([
+  const [listings, categories, counts] = await Promise.all([
     getCatalog({
       category,
       platform,
       leagueMode,
       sort: (sort as CatalogSort) ?? 'newest',
+      q,
     }),
     getCategories(),
+    getCategoryCounts(),
   ]);
 
   const activeCat = category
@@ -52,6 +57,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
     hours: t('hours'),
     from: t('from'),
     view: t('view'),
+    limited: t('limited'),
   };
   const badgeLabels = {
     HOT: t('badgeHot'),
@@ -70,18 +76,39 @@ export default async function CatalogPage({ params, searchParams }: Props) {
     sortEta: t('sortEta'),
   };
 
+  const showBanners = !category && !q;
+  const banners = BANNER_SLUGS.map((s) => categories.find((c) => c.slug === s))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+    .map((c) => ({ slug: c.slug, title: locale === 'ru' ? c.nameRu : c.nameEn }));
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="font-display text-3xl font-bold tracking-tight">{t('title')}</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">
+          {q ? t('resultsFor', { q }) : t('title')}
+        </h1>
         <p className="text-sm text-muted-foreground">
           {t('results', { count: listings.length })}
         </p>
       </div>
 
+      {showBanners && banners.length > 0 && (
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          {banners.map((b) => (
+            <FeatureBanner
+              key={b.slug}
+              slug={b.slug}
+              title={b.title}
+              ctaLabel={t('view')}
+              className="h-32"
+            />
+          ))}
+        </div>
+      )}
+
       {activeCat && ActiveIcon && (
         <div
-          className="mt-4 flex items-center gap-3 overflow-hidden rounded-lg border border-border p-4"
+          className="mt-6 flex items-center gap-3 overflow-hidden rounded-lg border border-border p-4"
           style={{
             background: `linear-gradient(120deg, rgba(${tint},0.14), transparent 65%)`,
           }}
@@ -98,36 +125,58 @@ export default async function CatalogPage({ params, searchParams }: Props) {
         </div>
       )}
 
-      <div className="sticky top-14 z-30 -mx-4 mt-4 space-y-3 bg-background/85 px-4 py-3 backdrop-blur sm:mx-0 sm:px-0">
-        <CategoryFilter
-          categories={categories}
-          active={category}
-          locale={locale}
-          allLabel={t('all')}
-        />
-        <CatalogControls labels={controlLabels} />
-      </div>
+      <div className="mt-6 grid gap-8 lg:grid-cols-[230px_1fr]">
+        <aside className="hidden lg:block">
+          <div className="sticky top-20">
+            <CategorySidebar
+              categories={categories}
+              counts={counts}
+              active={category}
+              locale={locale}
+              allLabel={t('allCategories')}
+            />
+          </div>
+        </aside>
 
-      {listings.length === 0 ? (
-        <EmptyState
-          icon={PackageSearch}
-          title={category || platform || leagueMode ? t('filteredEmpty') : t('empty')}
-          className="mt-8"
-        />
-      ) : (
-        <Stagger className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {listings.map((l) => (
-            <StaggerItem key={l.id}>
-              <ListingCard
-                listing={l}
-                locale={locale}
-                labels={cardLabels}
-                badgeLabels={badgeLabels}
-              />
-            </StaggerItem>
-          ))}
-        </Stagger>
-      )}
+        <div>
+          <div className="lg:hidden">
+            <CategoryFilter
+              categories={categories}
+              active={category}
+              locale={locale}
+              allLabel={t('all')}
+            />
+          </div>
+          <div className="mt-3 lg:mt-0">
+            <CatalogControls labels={controlLabels} />
+          </div>
+
+          {listings.length === 0 ? (
+            <EmptyState
+              icon={PackageSearch}
+              title={
+                q || category || platform || leagueMode
+                  ? t('filteredEmpty')
+                  : t('empty')
+              }
+              className="mt-6"
+            />
+          ) : (
+            <Stagger className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {listings.map((l) => (
+                <StaggerItem key={l.id}>
+                  <ListingCard
+                    listing={l}
+                    locale={locale}
+                    labels={cardLabels}
+                    badgeLabels={badgeLabels}
+                  />
+                </StaggerItem>
+              ))}
+            </Stagger>
+          )}
+        </div>
+      </div>
     </main>
   );
 }

@@ -76,6 +76,7 @@ export default async function ListingPage({ params }: Props) {
     hours: t('hours'),
     from: t('from'),
     view: t('view'),
+    limited: t('limited'),
   };
   const badgeLabels = {
     HOT: t('badgeHot'),

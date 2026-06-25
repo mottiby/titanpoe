@@ -63,6 +63,7 @@ export default async function HomePage({ params }: Props) {
     hours: tc('hours'),
     from: tc('from'),
     view: tc('view'),
+    limited: tc('limited'),
   };
   const badgeLabels = {
     HOT: tc('badgeHot'),

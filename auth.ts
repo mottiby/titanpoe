@@ -12,6 +12,7 @@ const credentialsSchema = z.object({
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true, // trust the deploy/proxy host (Vercel, tunnels) for callback/host checks
   session: { strategy: 'jwt' }, // required for Credentials (no DB adapter sessions)
   pages: { signIn: '/signin' },
   providers: [

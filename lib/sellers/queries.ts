@@ -19,10 +19,12 @@ export type CatalogOpts = {
   platform?: string;
   leagueMode?: string;
   sort?: CatalogSort;
+  q?: string;
 };
 
 export function getCatalog(opts: CatalogOpts = {}) {
-  const { category, platform, leagueMode, sort = 'newest' } = opts;
+  const { category, platform, leagueMode, sort = 'newest', q } = opts;
+  const term = q?.trim();
 
   const orderBy =
     sort === 'price_asc'
@@ -41,6 +43,14 @@ export function getCatalog(opts: CatalogOpts = {}) {
       ...(category ? { category: { slug: category } } : {}),
       ...(platform ? { platform: platform as Platform } : {}),
       ...(leagueMode ? { leagueMode: leagueMode as LeagueMode } : {}),
+      ...(term
+        ? {
+            OR: [
+              { titleEn: { contains: term, mode: 'insensitive' as const } },
+              { titleRu: { contains: term, mode: 'insensitive' as const } },
+            ],
+          }
+        : {}),
     },
     include: {
       category: true,
@@ -49,6 +59,18 @@ export function getCatalog(opts: CatalogOpts = {}) {
     },
     orderBy,
   });
+}
+
+/** Active-listing counts keyed by categoryId — for the catalog sidebar. */
+export async function getCategoryCounts(): Promise<Record<string, number>> {
+  const rows = await db.listing.groupBy({
+    by: ['categoryId'],
+    where: { active: true },
+    _count: { _all: true },
+  });
+  const map: Record<string, number> = {};
+  for (const r of rows) map[r.categoryId] = r._count._all;
+  return map;
 }
 
 export function getListing(id: string) {

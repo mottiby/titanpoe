@@ -32,7 +32,13 @@ export type ListingCardData = {
   tiers?: { priceCents: number }[];
 };
 
-type Labels = { eta: string; hours: string; from?: string; view?: string };
+type Labels = {
+  eta: string;
+  hours: string;
+  from?: string;
+  view?: string;
+  limited?: string;
+};
 
 const badgeVariant: Record<
   string,
@@ -68,6 +74,9 @@ export function ListingCard({
   const tiered = tierPrices.length > 1;
   const onSale =
     listing.compareAtCents != null && listing.compareAtCents > fromCents;
+  const percent = onSale
+    ? Math.round((1 - fromCents / listing.compareAtCents!) * 100)
+    : 0;
 
   if (compact) {
     return (
@@ -108,6 +117,11 @@ export function ListingCard({
               <Badge variant={badgeVariant[listing.badge] ?? "neutral"}>
                 {badgeLabels?.[listing.badge] ?? listing.badge}
               </Badge>
+            </span>
+          )}
+          {listing.badge === "SALE" && labels.limited && (
+            <span className="absolute top-2 right-2 rounded-full border border-warning/30 bg-warning/15 px-2 py-0.5 text-[0.6rem] font-semibold tracking-wide text-warning uppercase">
+              {labels.limited}
             </span>
           )}
           {labels.view && (
@@ -161,8 +175,13 @@ export function ListingCard({
             )}
             <div className="text-right">
               {onSale && (
-                <div className="text-xs text-muted-foreground line-through">
-                  {formatPrice(listing.compareAtCents!, locale)}
+                <div className="flex items-center justify-end gap-1.5">
+                  <span className="text-xs text-muted-foreground line-through">
+                    {formatPrice(listing.compareAtCents!, locale)}
+                  </span>
+                  <span className="rounded bg-success/15 px-1.5 py-0.5 text-[0.65rem] font-semibold text-success tabular-nums">
+                    −{percent}%
+                  </span>
                 </div>
               )}
               <PriceTag

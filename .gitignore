@@ -51,3 +51,11 @@ next-env.d.ts
 # Python bytecode (vendored skill scripts)
 __pycache__/
 *.pyc
+
+# Image-processing working set — large intermediates (~800MB). Only the curated,
+# resized PNGs under public/items/ ship to the build.
+/img
+/img2
+/.venv
+/download_overgear_poe2_images.py
+/process_poe2_images.py

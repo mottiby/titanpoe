@@ -10,6 +10,8 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PriceTag } from '@/components/marketplace/price-tag';
 import { EmptyState } from '@/components/marketplace/empty-state';
+import { ListingArt } from '@/components/marketplace/listing-art';
+import { itemImage } from '@/lib/items';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -37,6 +39,8 @@ export default async function CartPage({ params }: Props) {
     return {
       id: it.id,
       listingId: it.listing.id,
+      categorySlug: it.listing.category.slug,
+      itemSrc: itemImage({ id: it.listing.id, categorySlug: it.listing.category.slug }),
       title: locale === 'ru' ? it.listing.titleRu : it.listing.titleEn,
       tierName: tier ? (locale === 'ru' ? tier.nameRu : tier.nameEn) : undefined,
       quantity: it.quantity,
@@ -65,17 +69,26 @@ export default async function CartPage({ params }: Props) {
         <>
           <div className="mt-6 space-y-3">
             {lines.map((l) => (
-              <Card key={l.id} className="flex items-center justify-between gap-3 p-4">
-                <div className="min-w-0">
-                  <Link
-                    href={`/catalog/${l.listingId}`}
-                    className="truncate font-medium hover:text-primary"
-                  >
-                    {l.title}
-                  </Link>
-                  <div className="mt-0.5 text-xs text-muted-foreground">
-                    {l.tierName ? `${l.tierName} · ` : ''}× {l.quantity}
-                    {l.addonCount > 0 ? ` · +${l.addonCount}` : ''}
+              <Card key={l.id} className="flex items-center justify-between gap-3 p-3 sm:p-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <ListingArt
+                    slug={l.categorySlug}
+                    seed={l.listingId}
+                    itemSrc={l.itemSrc}
+                    sizes="56px"
+                    className="size-14 shrink-0 rounded-md border border-border"
+                  />
+                  <div className="min-w-0">
+                    <Link
+                      href={`/catalog/${l.listingId}`}
+                      className="block truncate font-medium hover:text-primary"
+                    >
+                      {l.title}
+                    </Link>
+                    <div className="mt-0.5 text-xs text-muted-foreground">
+                      {l.tierName ? `${l.tierName} · ` : ''}× {l.quantity}
+                      {l.addonCount > 0 ? ` · +${l.addonCount}` : ''}
+                    </div>
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">

@@ -2,6 +2,7 @@ import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { ListingArt } from './listing-art';
 import { categoryIcon, categoryTint } from './category-icons';
+import { itemImage } from '@/lib/items';
 
 /** Large image category card (overgear-style) — full-bleed arcane art + per-category color. */
 export function CategoryCard({
@@ -17,6 +18,7 @@ export function CategoryCard({
 }) {
   const Icon = categoryIcon(slug);
   const tint = categoryTint(slug);
+  const itemSrc = itemImage({ categorySlug: slug });
   return (
     <Link
       href={`/catalog?category=${slug}`}
@@ -29,7 +31,9 @@ export function CategoryCard({
       <ListingArt
         slug={slug}
         seed={`cat-${slug}`}
-        className="absolute inset-0 size-full transition-transform duration-500 ease-[var(--ease-out)] group-hover:scale-105"
+        itemSrc={itemSrc}
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+        className="absolute inset-0 size-full"
       />
       {/* Lighter overlay so the category color/art stays visible. */}
       <div className="absolute inset-0 bg-gradient-to-t from-background/88 via-background/25 to-transparent" />

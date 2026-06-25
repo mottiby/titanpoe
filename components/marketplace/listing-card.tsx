@@ -8,6 +8,7 @@ import { PriceTag } from "./price-tag";
 import { SellerBadge } from "./seller-badge";
 import { ListingArt } from "./listing-art";
 import { categoryIcon } from "./category-icons";
+import { itemImage } from "@/lib/items";
 
 export type ListingCardData = {
   id: string;
@@ -56,14 +57,18 @@ export function ListingCard({
   labels,
   badgeLabels,
   compact = false,
+  priority = false,
 }: {
   listing: ListingCardData;
   locale: string;
   labels: Labels;
   badgeLabels?: Record<string, string>;
   compact?: boolean;
+  /** Eager-load the item art for above-the-fold cards (LCP). */
+  priority?: boolean;
 }) {
   const Icon = categoryIcon(listing.category.slug);
+  const itemSrc = itemImage({ id: listing.id, categorySlug: listing.category.slug });
   const title = locale === "ru" ? listing.titleRu : listing.titleEn;
   const cat = locale === "ru" ? listing.category.nameRu : listing.category.nameEn;
   const highlights =
@@ -109,7 +114,9 @@ export function ListingCard({
           <ListingArt
             slug={listing.category.slug}
             seed={listing.id}
-            className="aspect-[16/9] transition-transform duration-500 ease-[var(--ease-out)] group-hover:scale-[1.06]"
+            itemSrc={itemSrc}
+            priority={priority}
+            className="aspect-[16/9]"
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           {listing.badge && (

@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { ListingArt } from './listing-art';
+import { itemImage } from '@/lib/items';
 
 /** Large promotional banner (overgear "Ascendancy Points / BiS Items" style). */
 export function FeatureBanner({
@@ -26,9 +27,11 @@ export function FeatureBanner({
       <ListingArt
         slug={slug}
         seed={`banner-${slug}`}
-        className="absolute inset-0 size-full transition-transform duration-500 ease-[var(--ease-out)] group-hover:scale-105"
+        itemSrc={itemImage({ categorySlug: slug })}
+        sizes="(max-width: 640px) 90vw, 33vw"
+        className="absolute inset-0 size-full"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/45 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/92 via-background/50 to-background/10" />
       <div className="relative flex h-full flex-col justify-end p-5">
         <div className="font-display text-xl leading-tight font-bold tracking-tight">
           {title}

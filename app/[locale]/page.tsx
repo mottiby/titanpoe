@@ -143,6 +143,7 @@ export default async function HomePage({ params }: Props) {
                   locale={locale}
                   labels={cardLabels}
                   badgeLabels={badgeLabels}
+                  priority
                 />
                 <div className="glass absolute -top-3 -left-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium shadow-[0_8px_24px_-12px_rgba(0,0,0,0.7)]">
                   <ShieldCheck className="size-3.5 text-primary" />

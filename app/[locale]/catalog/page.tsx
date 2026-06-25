@@ -163,13 +163,14 @@ export default async function CatalogPage({ params, searchParams }: Props) {
             />
           ) : (
             <Stagger className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {listings.map((l) => (
+              {listings.map((l, i) => (
                 <StaggerItem key={l.id}>
                   <ListingCard
                     listing={l}
                     locale={locale}
                     labels={cardLabels}
                     badgeLabels={badgeLabels}
+                    priority={i === 0}
                   />
                 </StaggerItem>
               ))}

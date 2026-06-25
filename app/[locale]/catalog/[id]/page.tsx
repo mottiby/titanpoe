@@ -22,6 +22,7 @@ import { RatingSummary, ReviewCard } from '@/components/marketplace/reviews';
 import { StickyBuyBar } from '@/components/marketplace/sticky-buy-bar';
 import { Breadcrumbs } from '@/components/marketplace/breadcrumbs';
 import { categoryIcon } from '@/components/marketplace/category-icons';
+import { itemImage } from '@/lib/items';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
@@ -109,6 +110,9 @@ export default async function ListingPage({ params }: Props) {
           <ListingArt
             slug={listing.category.slug}
             seed={listing.id}
+            itemSrc={itemImage({ id: listing.id, categorySlug: listing.category.slug })}
+            priority
+            sizes="(max-width: 1024px) 100vw, 760px"
             className="aspect-[21/9] rounded-lg border border-border"
           />
 

@@ -21,6 +21,11 @@ export async function Header() {
           <Link href="/sell" className="hover:underline">
             {t('sell')}
           </Link>
+          {session?.user && (
+            <Link href="/orders" className="hover:underline">
+              {t('orders')}
+            </Link>
+          )}
           {session?.user ? (
             <Link href="/account" className="hover:underline">
               {session.user.email}

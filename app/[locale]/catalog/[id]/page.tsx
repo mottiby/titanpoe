@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { auth } from '@/auth';
 import { getListing } from '@/lib/sellers/queries';
+import { placeOrder } from '@/lib/orders/actions';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 
@@ -13,6 +15,9 @@ export default async function ListingPage({ params }: Props) {
   const t = await getTranslations('Catalog');
   const listing = await getListing(id);
   if (!listing || !listing.active) notFound();
+
+  const session = await auth();
+  const isOwner = session?.user?.id === listing.seller.userId;
 
   const row = (label: string, value: string) => (
     <div>
@@ -40,10 +45,23 @@ export default async function ListingPage({ params }: Props) {
         {row('Fulfillment', listing.fulfillment)}
       </dl>
 
-      {/* Checkout + escrow arrive with the Stripe task */}
-      <Button className="mt-8" disabled>
-        Order (coming soon)
-      </Button>
+      <div className="mt-8">
+        {!session?.user ? (
+          <Link
+            href="/signin"
+            className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
+          >
+            {t('signInToOrder')}
+          </Link>
+        ) : isOwner ? (
+          <p className="text-sm text-muted-foreground">{t('yourListing')}</p>
+        ) : (
+          <form action={placeOrder}>
+            <input type="hidden" name="listingId" value={listing.id} />
+            <Button>{t('order')}</Button>
+          </form>
+        )}
+      </div>
     </main>
   );
 }

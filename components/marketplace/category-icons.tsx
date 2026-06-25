@@ -27,6 +27,22 @@ export function categoryIcon(slug: string): IconType {
   return categoryIcons[slug] ?? Package;
 }
 
+/**
+ * Renders the lucide icon for a category slug. Use this in JSX instead of
+ * aliasing `categoryIcon()` to a local PascalCase const — selecting a component
+ * from a static registry during render trips `react-hooks/static-components`.
+ */
+export function CategoryIcon({
+  slug,
+  className,
+}: {
+  slug: string;
+  className?: string;
+}) {
+  const Icon = categoryIcons[slug] ?? Package;
+  return <Icon className={className} />;
+}
+
 // rgb triplet per category (gold reserved for currency = value). Used for art
 // tints and subtle category-colored accents on category pages.
 const tints: Record<string, string> = {

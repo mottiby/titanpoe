@@ -19,7 +19,7 @@ describe.skipIf(!runStripe)('StripePaymentProvider (live Stripe test API)', () =
 
     // Connected account in the platform's own country/currency (no cross-border).
     // dob 1902-01-01 = immediate test-mode identity verification.
-    const platform = await stripe.accounts.retrieve();
+    const platform = await stripe.accounts.retrieve(null);
     const country = platform.country ?? 'DE';
     currency = platform.default_currency ?? 'eur';
     const stamp = Date.now();

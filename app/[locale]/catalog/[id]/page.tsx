@@ -21,7 +21,7 @@ import { ProductConfigurator } from '@/components/marketplace/product-configurat
 import { RatingSummary, ReviewCard } from '@/components/marketplace/reviews';
 import { StickyBuyBar } from '@/components/marketplace/sticky-buy-bar';
 import { Breadcrumbs } from '@/components/marketplace/breadcrumbs';
-import { categoryIcon } from '@/components/marketplace/category-icons';
+import { CategoryIcon } from '@/components/marketplace/category-icons';
 import { itemImage } from '@/lib/items';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
@@ -46,7 +46,6 @@ export default async function ListingPage({ params }: Props) {
     getRelatedListings(listing.categoryId, id),
   ]);
 
-  const Icon = categoryIcon(listing.category.slug);
   const title = locale === 'ru' ? listing.titleRu : listing.titleEn;
   const cat = locale === 'ru' ? listing.category.nameRu : listing.category.nameEn;
   const description = locale === 'ru' ? listing.descriptionRu : listing.descriptionEn;
@@ -117,7 +116,7 @@ export default async function ListingPage({ params }: Props) {
           />
 
           <div className="mt-5 flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Icon className="size-4 text-primary" />
+            <CategoryIcon slug={listing.category.slug} className="size-4 text-primary" />
             {cat}
           </div>
           <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">{title}</h1>

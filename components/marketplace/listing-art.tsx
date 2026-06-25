@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { categoryIcon, categoryTint } from './category-icons';
+import { CategoryIcon, categoryTint } from './category-icons';
 
 // Fully-owned "arcane" art (no external/game assets): a layered mesh gradient,
 // a faint per-listing geometric sigil, the category glyph, grain and a top sheen.
@@ -57,7 +57,6 @@ export function ListingArt({
   priority?: boolean;
   sizes?: string;
 }) {
-  const Icon = categoryIcon(slug);
   const h = hash(seed || slug);
   const tint = categoryTint(slug);
   const x = 18 + (h % 64);
@@ -90,7 +89,7 @@ export function ListingArt({
           className="absolute -right-5 -bottom-5 opacity-[0.13]"
           style={{ transform: `rotate(${rot / 2}deg)`, color: `rgb(${tint})` }}
         >
-          <Icon className="size-28" />
+          <CategoryIcon slug={slug} className="size-28" />
         </span>
       )}
       <div

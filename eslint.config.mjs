@@ -12,6 +12,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local Python venvs for the Playwright item-art pipeline (git-ignored).
+    ".venv/**",
+    "img/**",
+    "img2/**",
+    "**/.venv/**",
+    // Generated Prisma client.
+    "lib/generated/**",
   ]),
 ]);
 

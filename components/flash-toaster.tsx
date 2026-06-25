@@ -27,6 +27,8 @@ export function FlashToaster() {
     const m = map[flash];
     if (!m) return;
 
+    // Reacting to an external input (the URL `?flash` param) — legitimate effect sync.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMsg(m);
     const params = new URLSearchParams(sp.toString());
     params.delete('flash');

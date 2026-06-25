@@ -1,7 +1,7 @@
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { ListingArt } from './listing-art';
-import { categoryIcon, categoryTint } from './category-icons';
+import { CategoryIcon, categoryTint } from './category-icons';
 import { itemImage } from '@/lib/items';
 
 /** Large image category card (overgear-style) — full-bleed arcane art + per-category color. */
@@ -16,7 +16,6 @@ export function CategoryCard({
   countLabel?: string;
   className?: string;
 }) {
-  const Icon = categoryIcon(slug);
   const tint = categoryTint(slug);
   const itemSrc = itemImage({ categorySlug: slug });
   return (
@@ -49,7 +48,7 @@ export function CategoryCard({
           className="grid size-11 place-items-center rounded-lg backdrop-blur"
           style={{ background: `rgba(${tint},0.18)`, color: `rgb(${tint})` }}
         >
-          <Icon className="size-5" />
+          <CategoryIcon slug={slug} className="size-5" />
         </span>
         <div className="mt-3 font-display text-lg leading-tight font-semibold">
           {name}

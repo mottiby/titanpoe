@@ -1,13 +1,12 @@
 import { Clock, Gamepad2, Check } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
 import { leagueModeLabel, formatPrice } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PriceTag } from "./price-tag";
 import { SellerBadge } from "./seller-badge";
 import { ListingArt } from "./listing-art";
-import { categoryIcon } from "./category-icons";
+import { CategoryIcon } from "./category-icons";
 import { itemImage } from "@/lib/items";
 
 export type ListingCardData = {
@@ -67,7 +66,6 @@ export function ListingCard({
   /** Eager-load the item art for above-the-fold cards (LCP). */
   priority?: boolean;
 }) {
-  const Icon = categoryIcon(listing.category.slug);
   const itemSrc = itemImage({ id: listing.id, categorySlug: listing.category.slug });
   const title = locale === "ru" ? listing.titleRu : listing.titleEn;
   const cat = locale === "ru" ? listing.category.nameRu : listing.category.nameEn;
@@ -90,7 +88,7 @@ export function ListingCard({
         className="card-sheen flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:border-[color-mix(in_oklab,var(--border),white_22%)] focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none"
       >
         <span className="flex min-w-0 items-center gap-2">
-          <Icon className="size-4 shrink-0 text-primary" />
+          <CategoryIcon slug={listing.category.slug} className="size-4 shrink-0 text-primary" />
           <span className="truncate font-medium">{title}</span>
           <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
             {cat}
@@ -140,7 +138,7 @@ export function ListingCard({
 
         <div className="flex flex-1 flex-col p-4">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Icon className="size-4 text-primary" />
+            <CategoryIcon slug={listing.category.slug} className="size-4 text-primary" />
             <span>{cat}</span>
           </div>
 

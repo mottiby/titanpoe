@@ -12,7 +12,7 @@ import { CatalogControls } from '@/components/marketplace/catalog-controls';
 import { FeatureBanner } from '@/components/marketplace/feature-banner';
 import { ListingCard } from '@/components/marketplace/listing-card';
 import { EmptyState } from '@/components/marketplace/empty-state';
-import { categoryTint, categoryIcon } from '@/components/marketplace/category-icons';
+import { categoryTint, CategoryIcon } from '@/components/marketplace/category-icons';
 import { Stagger, StaggerItem } from '@/components/motion/motion';
 
 type Props = {
@@ -49,7 +49,6 @@ export default async function CatalogPage({ params, searchParams }: Props) {
   const activeCat = category
     ? categories.find((c) => c.slug === category)
     : undefined;
-  const ActiveIcon = activeCat ? categoryIcon(activeCat.slug) : null;
   const tint = activeCat ? categoryTint(activeCat.slug) : '';
 
   const cardLabels = {
@@ -106,7 +105,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
         </div>
       )}
 
-      {activeCat && ActiveIcon && (
+      {activeCat && (
         <div
           className="mt-6 flex items-center gap-3 overflow-hidden rounded-lg border border-border p-4"
           style={{
@@ -117,7 +116,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
             className="grid size-10 shrink-0 place-items-center rounded-md"
             style={{ background: `rgba(${tint},0.16)`, color: `rgb(${tint})` }}
           >
-            <ActiveIcon className="size-5" />
+            <CategoryIcon slug={activeCat.slug} className="size-5" />
           </span>
           <span className="font-display text-lg font-semibold">
             {locale === 'ru' ? activeCat.nameRu : activeCat.nameEn}

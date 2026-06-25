@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { db } from '@/lib/db';
 import { resolveDispute } from '@/lib/orders/service';
-import { providerForSeller } from '@/lib/payments/select';
+import { providerForHoldRef } from '@/lib/payments/select';
 
 export async function isModerator(): Promise<boolean> {
   const session = await auth();
@@ -20,7 +20,7 @@ export async function resolveDisputeAction(formData: FormData) {
 
   const order = await db.order.findUniqueOrThrow({
     where: { id: orderId },
-    include: { listing: { include: { seller: true } } },
+    include: { escrow: true },
   });
-  await resolveDispute(orderId, outcome, providerForSeller(order.listing.seller.stripeAcctId));
+  await resolveDispute(orderId, outcome, providerForHoldRef(order.escrow?.stripePaymentId));
 }

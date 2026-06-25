@@ -12,7 +12,39 @@ export interface PaymentRef {
   providerRef: string;
 }
 
+/** One order to be paid for within a single hosted checkout (cart = many lines). */
+export interface CheckoutLine {
+  orderId: string;
+  amount: Money;
+  /** Product name shown to the buyer at checkout. */
+  name: string;
+}
+
+export interface CheckoutInput {
+  /** One line per order; a single payment can cover several orders (cart). */
+  lines: CheckoutLine[];
+  /** Absolute URLs the PSP redirects the buyer back to. */
+  successUrl: string;
+  cancelUrl: string;
+}
+
+export interface CheckoutResult {
+  /**
+   * Where to redirect the buyer to enter payment. `null` means the provider has
+   * no hosted checkout (manual rail) — the caller should fall back to an instant
+   * {@link PaymentProvider.hold}.
+   */
+  url: string | null;
+}
+
 export interface PaymentProvider {
+  /**
+   * Start a hosted checkout the buyer completes themselves (enters their card).
+   * The order becomes PAID only once the PSP confirms payment (e.g. via webhook).
+   * Returns `{ url: null }` for providers without a hosted flow (manual rail).
+   */
+  createCheckout(input: CheckoutInput): Promise<CheckoutResult>;
+
   /** Charge the buyer and hold the funds in escrow (not yet the seller's). */
   hold(input: { orderId: string; amount: Money }): Promise<PaymentRef>;
 

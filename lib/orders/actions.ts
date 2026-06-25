@@ -2,18 +2,56 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { getLocale } from 'next-intl/server';
 import { z } from 'zod';
 import { auth } from '@/auth';
 import { db } from '@/lib/db';
 import * as orders from '@/lib/orders/service';
 import { configuredAmountCents } from '@/lib/orders/pricing';
-import { providerForSeller } from '@/lib/payments/select';
+import { providerForSeller, providerForHoldRef } from '@/lib/payments/select';
 import { notifyNewOrder, notifyDelivered, notifyCompleted } from '@/lib/orders/notify';
+import { getOrigin } from '@/lib/base-url';
 
 async function requireUserId(): Promise<string> {
   const session = await auth();
   if (!session?.user?.id) redirect('/signin');
   return session.user.id;
+}
+
+/**
+ * Resolve where to send the buyer after creating an order. Stripe rail -> a
+ * hosted Checkout URL (the order stays CREATED until the webhook flips it to
+ * PAID). Manual rail -> instant hold + notify, then straight to the order page.
+ * The caller must `redirect()` to the returned URL (outside any try/catch).
+ */
+async function checkoutUrlForOrder(
+  order: { id: string; amountCents: number },
+  listing: {
+    id: string;
+    titleEn: string;
+    category: { slug: string };
+    seller: { stripeAcctId: string | null };
+  },
+): Promise<string> {
+  const locale = await getLocale();
+  const origin = await getOrigin();
+  const provider = providerForSeller(listing.seller.stripeAcctId, listing.category.slug);
+  const checkout = await provider.createCheckout({
+    lines: [
+      {
+        orderId: order.id,
+        amount: { amountCents: order.amountCents, currency: 'eur' },
+        name: listing.titleEn,
+      },
+    ],
+    successUrl: `${origin}/${locale}/orders/${order.id}?flash=orderPlaced`,
+    cancelUrl: `${origin}/${locale}/catalog/${listing.id}`,
+  });
+  if (checkout.url) return checkout.url; // Stripe hosted checkout
+  // Manual rail: hold immediately (order -> PAID) and notify the seller.
+  await orders.payOrder(order.id, provider);
+  await notifyNewOrder(order.id);
+  return `/${locale}/orders/${order.id}?flash=orderPlaced`;
 }
 
 /** Buyer places an order from a listing and pays into escrow. */
@@ -23,14 +61,13 @@ export async function placeOrder(formData: FormData) {
 
   const listing = await db.listing.findUniqueOrThrow({
     where: { id: listingId },
-    include: { seller: true },
+    include: { seller: true, category: true },
   });
   if (listing.seller.userId === userId) redirect(`/catalog/${listingId}`); // can't buy own listing
 
   const order = await orders.createOrder({ buyerId: userId, listingId });
-  await orders.payOrder(order.id, providerForSeller(listing.seller.stripeAcctId));
-  await notifyNewOrder(order.id);
-  redirect(`/orders/${order.id}?flash=orderPlaced`);
+  const url = await checkoutUrlForOrder(order, listing);
+  redirect(url);
 }
 
 const ConfigInput = z.object({
@@ -55,7 +92,7 @@ export async function placeConfiguredOrder(formData: FormData) {
 
   const listing = await db.listing.findUniqueOrThrow({
     where: { id: input.listingId },
-    include: { seller: true, tiers: true, addons: true },
+    include: { seller: true, tiers: true, addons: true, category: true },
   });
   if (listing.seller.userId === userId) redirect(`/catalog/${input.listingId}`);
 
@@ -74,16 +111,15 @@ export async function placeConfiguredOrder(formData: FormData) {
     listingId: listing.id,
     amountCents,
   });
-  await orders.payOrder(order.id, providerForSeller(listing.seller.stripeAcctId));
-  await notifyNewOrder(order.id);
-  redirect(`/orders/${order.id}?flash=orderPlaced`);
+  const url = await checkoutUrlForOrder(order, listing);
+  redirect(url);
 }
 
 async function authorize(orderId: string, role: 'buyer' | 'seller' | 'party') {
   const userId = await requireUserId();
   const order = await db.order.findUniqueOrThrow({
     where: { id: orderId },
-    include: { listing: { include: { seller: true } } },
+    include: { listing: { include: { seller: true } }, escrow: true },
   });
   const isBuyer = order.buyerId === userId;
   const isSeller = order.listing.seller.userId === userId;
@@ -109,14 +145,14 @@ export async function sellerDeliver(formData: FormData) {
 export async function buyerConfirm(formData: FormData) {
   const orderId = String(formData.get('orderId'));
   const order = await authorize(orderId, 'buyer');
-  await orders.confirmCompletion(orderId, providerForSeller(order.listing.seller.stripeAcctId));
+  await orders.confirmCompletion(orderId, providerForHoldRef(order.escrow?.stripePaymentId));
   await notifyCompleted(orderId);
 }
 
 export async function buyerCancel(formData: FormData) {
   const orderId = String(formData.get('orderId'));
   const order = await authorize(orderId, 'buyer');
-  await orders.cancelOrder(orderId, providerForSeller(order.listing.seller.stripeAcctId));
+  await orders.cancelOrder(orderId, providerForHoldRef(order.escrow?.stripePaymentId));
 }
 
 export async function buyerDispute(formData: FormData) {

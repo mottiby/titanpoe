@@ -1,16 +1,51 @@
 import Stripe from 'stripe';
-import type { Money, PaymentProvider, PaymentRef } from './provider';
+import type {
+  CheckoutInput,
+  CheckoutResult,
+  Money,
+  PaymentProvider,
+  PaymentRef,
+} from './provider';
 
 // Stripe Connect implementation using the "separate charges and transfers" model.
 // Source: https://docs.stripe.com/connect/separate-charges-and-transfers
-//   hold    -> charge the buyer to the platform (PaymentIntent, transfer_group)
-//   release -> Transfer to the seller's connected account (amount - platform fee)
-//   refund  -> Refund the PaymentIntent
+//   checkout -> hosted Checkout Session; the buyer enters their own card
+//   hold     -> charge the buyer to the platform (PaymentIntent, transfer_group)
+//   release  -> Transfer to the seller's connected account (amount - platform fee)
+//   refund   -> Refund the PaymentIntent
 export class StripePaymentProvider implements PaymentProvider {
   private readonly stripe: Stripe;
 
   constructor(secretKey: string) {
     this.stripe = new Stripe(secretKey);
+  }
+
+  // Hosted Checkout the buyer completes themselves. One charge to the platform
+  // (transfer_group = order id) covers every line; on completion the webhook
+  // marks the order(s) PAID. Funds reach sellers later via release() transfers.
+  // Source: https://docs.stripe.com/payments/checkout
+  async createCheckout(input: CheckoutInput): Promise<CheckoutResult> {
+    const orderIds = input.lines.map((l) => l.orderId);
+    const session = await this.stripe.checkout.sessions.create({
+      mode: 'payment',
+      line_items: input.lines.map((l) => ({
+        quantity: 1,
+        price_data: {
+          currency: l.amount.currency,
+          unit_amount: l.amount.amountCents,
+          product_data: { name: l.name },
+        },
+      })),
+      payment_intent_data: {
+        transfer_group: orderIds[0],
+        metadata: { orderIds: orderIds.join(',') },
+      },
+      metadata: { orderIds: orderIds.join(',') },
+      client_reference_id: orderIds[0],
+      success_url: input.successUrl,
+      cancel_url: input.cancelUrl,
+    });
+    return { url: session.url };
   }
 
   async hold(input: { orderId: string; amount: Money }): Promise<PaymentRef> {

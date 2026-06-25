@@ -2,13 +2,20 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { getLocale } from 'next-intl/server';
 import { z } from 'zod';
 import { auth } from '@/auth';
 import { db } from '@/lib/db';
 import * as orders from '@/lib/orders/service';
 import { configuredAmountCents } from '@/lib/orders/pricing';
-import { providerForSeller } from '@/lib/payments/select';
+import {
+  providerForSeller,
+  isStripeRail,
+  stripeCheckoutProvider,
+} from '@/lib/payments/select';
+import type { CheckoutLine } from '@/lib/payments/provider';
 import { notifyNewOrder } from '@/lib/orders/notify';
+import { getOrigin } from '@/lib/base-url';
 
 async function requireUserId(): Promise<string> {
   const session = await auth();
@@ -62,16 +69,26 @@ export async function removeCartItem(formData: FormData) {
   revalidatePath('/', 'layout');
 }
 
-/** Check out the whole cart: one escrow Order per item (price recomputed from DB). */
+/**
+ * Check out the whole cart: one escrow Order per item (price recomputed from DB).
+ * Stripe-rail items are batched into a single hosted Checkout (one charge to the
+ * platform, transfers per order on release); manual-rail items (RMT categories or
+ * sellers without Stripe) are held instantly. With any Stripe lines the buyer is
+ * redirected to Checkout and those orders become PAID via the webhook.
+ */
 export async function checkoutCart() {
   const userId = await requireUserId();
   const items = await db.cartItem.findMany({
     where: { userId },
     include: {
-      listing: { include: { seller: true, tiers: true, addons: true } },
+      listing: { include: { seller: true, tiers: true, addons: true, category: true } },
     },
   });
   if (items.length === 0) redirect('/cart');
+
+  const locale = await getLocale();
+  const origin = await getOrigin();
+  const stripeLines: CheckoutLine[] = [];
 
   for (const it of items) {
     if (it.listing.seller.userId === userId) continue; // never buy own listing
@@ -85,11 +102,34 @@ export async function checkoutCart() {
       listingId: it.listingId,
       amountCents,
     });
-    await orders.payOrder(order.id, providerForSeller(it.listing.seller.stripeAcctId));
-    await notifyNewOrder(order.id);
+
+    if (isStripeRail(it.listing.seller.stripeAcctId, it.listing.category.slug)) {
+      stripeLines.push({
+        orderId: order.id,
+        amount: { amountCents, currency: 'eur' },
+        name: it.listing.titleEn,
+      });
+    } else {
+      // Manual rail: instant hold (order -> PAID) and notify the seller.
+      await orders.payOrder(
+        order.id,
+        providerForSeller(it.listing.seller.stripeAcctId, it.listing.category.slug),
+      );
+      await notifyNewOrder(order.id);
+    }
   }
 
   await db.cartItem.deleteMany({ where: { userId } });
   revalidatePath('/', 'layout');
+
+  if (stripeLines.length > 0) {
+    const checkout = await stripeCheckoutProvider().createCheckout({
+      lines: stripeLines,
+      successUrl: `${origin}/${locale}/orders?flash=ordersPlaced`,
+      cancelUrl: `${origin}/${locale}/cart`,
+    });
+    if (checkout.url) redirect(checkout.url); // hosted checkout for Stripe items
+  }
+
   redirect('/orders?flash=ordersPlaced');
 }

@@ -8,8 +8,9 @@
 A **near-complete, polished, bilingual (EN/RU) services marketplace for Path of Exile 2**, modeled on
 overgear. It builds clean, has **36 passing tests**, real **Stripe** escrow verified on the test API, a
 full **dark "arcane" design system** applied across every page, and an **overgear-grade catalog/listing
-UX** (configurator, tiers/add-ons, cart, reviews, item art). What's left is mostly **productionizing
-payments (real checkout + webhooks), wiring schedulers/integrations that need accounts, and polish.**
+UX** (configurator, tiers/add-ons, cart, reviews, item art). The real Stripe **buyer checkout + webhooks
+are now coded** (hosted Checkout → PAID via signed webhook); what's left is mostly **live-verifying them
+(needs the webhook secret + an onboarded seller), wiring schedulers/integrations that need accounts, and polish.**
 
 Verification at audit time: `npm run build` → **0** (24 routes) · `npm test` → **33 passed / 3 skipped**
 (Stripe suite skips without a key) · live dev server renders home + catalog correctly.
@@ -93,17 +94,24 @@ Matches docs/design + `.claude/skills/titanpoe2-design-system`.
 5. **LF→CRLF** git warnings on Windows — add a `.gitattributes` (`* text=auto eol=lf`).
 
 ## What's left to do (prioritized, referencing current code)
-### P1 — productionize payments (the real gap)
-- **Real buyer checkout.** `StripePaymentProvider.hold()` currently confirms with the test card
-  `pm_card_visa` — there is **no real card-entry UI**. Add Stripe **Checkout** or **Elements** + a
-  PaymentIntent flow the buyer confirms; only then is the order truly "paid".
-- **Stripe webhooks** — handle `payment_intent.succeeded`, `account.updated`, `charge.refunded`,
-  transfer events; make order transitions **idempotent** off webhook `event.id`. New route `/api/webhooks/stripe`.
-- **RMT rail for currency/items** — Stripe prohibits third-party game-currency sales (docs/03 §13).
-  Currency/Items listings need a **gaming-friendly PSP** (or restrict those categories). The provider
-  abstraction already supports adding one beside Stripe.
-- **Payout readiness guard** — block `confirmCompletion` (release) until the seller's connected account
-  has `transfers` active (`lib/payments/connect.ts → isPayoutReady`), else surface "seller not onboarded".
+### P1 — productionize payments
+- **Real buyer checkout — DONE (code).** `PaymentProvider.createCheckout()` added; `StripePaymentProvider`
+  opens a hosted **Stripe Checkout Session** (EUR, `transfer_group`/metadata = order id) and the buyer
+  enters their own card. `placeOrder`/`placeConfiguredOrder`/`checkoutCart` create a CREATED order and
+  **redirect to Checkout**; `ManualPaymentProvider` keeps the instant-hold fallback. The old server-side
+  `pm_card_visa` `hold()` remains only as the manual/dev rail.
+- **Stripe webhooks — DONE (code).** New route `app/api/webhooks/stripe/route.ts` (Node runtime, raw-body
+  signature check via `STRIPE_WEBHOOK_SECRET`): `checkout.session.completed`/`payment_intent.succeeded`
+  → Order **PAID** + `EscrowTxn` (idempotent via a status-guarded `CREATED→PAID` `updateMany`),
+  `account.updated` → seller `kycStatus`, `charge.refunded` → escrow `refundedAt`.
+- **RMT rail for currency/items — DONE (code).** `isStripeRail()` keeps `currency`/`items` on the manual
+  rail (`lib/payments/select.ts`); release/refund pick the rail from the recorded hold ref
+  (`pi_…` = Stripe). A gaming-friendly PSP can still slot in beside Stripe.
+- **Payout readiness guard — DONE (code).** `confirmCompletion` blocks a Stripe-rail release until the
+  seller's connected account has `transfers` active (`lib/payments/connect.ts → isPayoutReady`).
+- **Pending live verification (needs accounts/secret):** set `STRIPE_WEBHOOK_SECRET` (local:
+  `stripe listen --forward-to localhost:3000/api/webhooks/stripe`), then run a `4242…` checkout end-to-end
+  (Order→PAID via webhook) with an onboarded seller, through deliver → confirm → transfer.
 
 ### P2 — wire the deferred services (need accounts)
 - **Scheduler → `/api/cron/auto-release`** (Vercel Cron or Inngest) so 72h release actually fires.

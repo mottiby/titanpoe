@@ -47,3 +47,7 @@ next-env.d.ts
 
 # keep example env (commit template, not the real .env)
 !.env.example
+
+# Python bytecode (vendored skill scripts)
+__pycache__/
+*.pyc

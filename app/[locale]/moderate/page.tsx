@@ -1,9 +1,13 @@
 import { redirect } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { ShieldCheck } from 'lucide-react';
 import { auth } from '@/auth';
 import { getDisputedOrders } from '@/lib/moderation/queries';
 import { resolveDisputeAction } from '@/lib/moderation/actions';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { PriceTag } from '@/components/marketplace/price-tag';
+import { EmptyState } from '@/components/marketplace/empty-state';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -21,23 +25,29 @@ export default async function ModeratePage({ params }: Props) {
   const disputes = await getDisputedOrders();
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="text-3xl font-bold">{t('title')}</h1>
+    <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      <h1 className="font-display text-3xl font-bold tracking-tight">{t('title')}</h1>
 
       {disputes.length === 0 ? (
-        <p className="mt-6 text-muted-foreground">{t('none')}</p>
+        <EmptyState icon={ShieldCheck} title={t('none')} className="mt-6" />
       ) : (
-        <ul className="mt-6 divide-y">
+        <div className="mt-6 flex flex-col gap-3">
           {disputes.map((o) => (
-            <li key={o.id} className="py-4">
-              <div className="font-medium">
-                {locale === 'ru' ? o.listing.titleRu : o.listing.titleEn} — €
-                {(o.amountCents / 100).toFixed(2)}
+            <Card key={o.id} className="p-5">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="font-medium">
+                  {locale === 'ru' ? o.listing.titleRu : o.listing.titleEn}
+                </div>
+                <PriceTag cents={o.amountCents} locale={locale} size="sm" />
               </div>
-              <div className="mt-1 text-sm text-muted-foreground">
-                {t('buyer')}: {o.buyer.email} · {t('reason')}: {o.dispute?.reason}
+              <div className="mt-2 text-sm text-muted-foreground">
+                {t('buyer')}: {o.buyer.email}
               </div>
-              <div className="mt-3 flex gap-2">
+              <div className="mt-1 text-sm">
+                <span className="text-muted-foreground">{t('reason')}:</span>{' '}
+                {o.dispute?.reason}
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
                 <form action={resolveDisputeAction}>
                   <input type="hidden" name="orderId" value={o.id} />
                   <input type="hidden" name="outcome" value="REFUND" />
@@ -49,9 +59,9 @@ export default async function ModeratePage({ params }: Props) {
                   <Button>{t('releaseSeller')}</Button>
                 </form>
               </div>
-            </li>
+            </Card>
           ))}
-        </ul>
+        </div>
       )}
     </main>
   );

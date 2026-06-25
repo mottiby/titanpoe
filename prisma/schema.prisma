@@ -52,6 +52,13 @@ enum Platform {
   XBOX
 }
 
+enum ListingBadge {
+  HOT
+  SALE
+  NEW
+  BEST_VALUE
+}
+
 enum OrderStatus {
   CREATED
   PAID
@@ -118,18 +125,52 @@ model Listing {
   descriptionEn String        @default("")
   descriptionRu String        @default("")
   priceCents    Int
+  compareAtCents Int? // optional "was" price for sale strikethrough
   currency      String        @default("eur")
   etaHours      Int
   fulfillment   Fulfillment
   platform      Platform
   league        String
   leagueMode    LeagueMode
+  badge         ListingBadge?
+  highlightsEn  String[]      @default([]) // benefit bullets
+  highlightsRu  String[]      @default([])
+  heroImageUrl  String? // optional owned art override; UI generates art when null
   active        Boolean       @default(true)
+  tiers         ListingTier[]
+  addons        ListingAddon[]
   orders        Order[]
   createdAt     DateTime      @default(now())
 
   @@index([categoryId])
   @@index([sellerId])
+}
+
+// Optional configurable price tiers (e.g. boss runs / difficulty / pack size).
+// A listing with no tiers falls back to priceCents.
+model ListingTier {
+  id        String  @id @default(cuid())
+  listingId String
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  nameEn    String
+  nameRu    String
+  priceCents Int
+  etaHours  Int
+  position  Int     @default(0)
+
+  @@index([listingId])
+}
+
+// Optional paid add-ons (e.g. express delivery, livestream, priority).
+model ListingAddon {
+  id        String  @id @default(cuid())
+  listingId String
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  nameEn    String
+  nameRu    String
+  priceCents Int
+
+  @@index([listingId])
 }
 
 model Order {

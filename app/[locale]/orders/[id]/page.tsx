@@ -10,10 +10,29 @@ import {
   buyerDispute,
 } from '@/lib/orders/actions';
 import { OrderChat } from '@/components/orders/order-chat';
+import { ReviewForm } from '@/components/orders/review-form';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Link } from '@/i18n/navigation';
+import { PriceTag } from '@/components/marketplace/price-tag';
+import { OrderStatusBadge } from '@/components/marketplace/order-status-badge';
+import { EscrowStepper } from '@/components/marketplace/escrow-stepper';
+import { RatingStars } from '@/components/marketplace/rating-stars';
+import { FadeIn } from '@/components/motion/motion';
 
 type Props = { params: Promise<{ locale: string; id: string }> };
+
+const STATUSES = [
+  'CREATED',
+  'PAID',
+  'IN_PROGRESS',
+  'DELIVERED',
+  'COMPLETED',
+  'DISPUTED',
+  'REFUNDED',
+  'CANCELLED',
+] as const;
 
 export default async function OrderPage({ params }: Props) {
   const { locale, id } = await params;
@@ -34,21 +53,37 @@ export default async function OrderPage({ params }: Props) {
   const title = locale === 'ru' ? order.listing.titleRu : order.listing.titleEn;
   const messages = await getOrderMessages(order.id);
 
+  const statusLabels = Object.fromEntries(
+    STATUSES.map((s) => [s, t(`status.${s}`)]),
+  );
+
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
-      <Link href="/orders" className="text-sm text-muted-foreground hover:underline">
+    <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <Link
+        href="/orders"
+        className="text-sm text-muted-foreground hover:text-foreground"
+      >
         {t('back')}
       </Link>
 
-      <h1 className="mt-4 text-2xl font-bold">{title}</h1>
-      <p className="mt-1 text-2xl font-semibold">€{(order.amountCents / 100).toFixed(2)}</p>
-      <p className="mt-3">
-        <span className="rounded bg-muted px-2 py-1 text-sm font-medium">
-          {t(`status.${order.status}`)}
-        </span>
-      </p>
+      <div className="mt-4">
+        <h1 className="font-display text-2xl font-bold tracking-tight">{title}</h1>
+        <div className="mt-2 flex items-center gap-3">
+          <PriceTag cents={order.amountCents} locale={locale} size="md" />
+          <OrderStatusBadge status={order.status} label={t(`status.${order.status}`)} />
+        </div>
+      </div>
 
-      <div className="mt-8 flex flex-wrap items-start gap-3">
+      <FadeIn className="mt-6">
+        <Card className="p-5">
+          <EscrowStepper status={order.status} labels={statusLabels} />
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            {t('escrowNote')}
+          </p>
+        </Card>
+      </FadeIn>
+
+      <div className="mt-6 flex flex-wrap items-start gap-3">
         {isSeller && order.status === 'PAID' && (
           <form action={sellerStartWork}>
             <input type="hidden" name="orderId" value={order.id} />
@@ -73,25 +108,60 @@ export default async function OrderPage({ params }: Props) {
             <Button variant="outline">{t('cancel')}</Button>
           </form>
         )}
-        {isBuyer && (order.status === 'IN_PROGRESS' || order.status === 'DELIVERED') && (
-          <form action={buyerDispute} className="flex gap-2">
-            <input type="hidden" name="orderId" value={order.id} />
-            <input
-              name="reason"
-              required
-              placeholder={t('disputeReason')}
-              className="rounded-md border px-3 py-2 text-sm"
-            />
-            <Button variant="outline">{t('dispute')}</Button>
-          </form>
-        )}
+        {isBuyer &&
+          (order.status === 'IN_PROGRESS' || order.status === 'DELIVERED') && (
+            <form action={buyerDispute} className="flex flex-1 flex-wrap gap-2">
+              <input type="hidden" name="orderId" value={order.id} />
+              <Input
+                name="reason"
+                required
+                placeholder={t('disputeReason')}
+                className="h-9 flex-1 sm:max-w-xs"
+              />
+              <Button variant="outline">{t('dispute')}</Button>
+            </form>
+          )}
       </div>
+
+      {/* Review prompt — buyer, completed order */}
+      {isBuyer && order.status === 'COMPLETED' && (
+        <Card className="mt-6 p-5">
+          {order.review ? (
+            <div>
+              <div className="text-sm font-medium">{t('yourReview')}</div>
+              <div className="mt-2">
+                <RatingStars value={order.review.rating} />
+              </div>
+              {order.review.body && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {order.review.body}
+                </p>
+              )}
+            </div>
+          ) : (
+            <ReviewForm
+              orderId={order.id}
+              labels={{
+                title: t('leaveReview'),
+                body: t('reviewBody'),
+                submit: t('reviewSubmit'),
+              }}
+            />
+          )}
+        </Card>
+      )}
 
       <OrderChat
         orderId={order.id}
         userId={userId}
         buyerId={order.buyerId}
-        initial={messages.map((m) => ({ id: m.id, senderId: m.senderId, body: m.body }))}
+        initial={messages.map((m) => ({
+          id: m.id,
+          senderId: m.senderId,
+          body: m.body,
+          system: m.system,
+          attachmentUrl: m.attachmentUrl,
+        }))}
       />
     </main>
   );

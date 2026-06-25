@@ -12,15 +12,24 @@ function money(order: { amountCents: number }): Money {
   return { amountCents: order.amountCents, currency: 'eur' };
 }
 
-/** Create a CREATED order for a listing, pricing it and computing the platform fee. */
-export async function createOrder(input: { buyerId: string; listingId: string }) {
+/**
+ * Create a CREATED order for a listing, pricing it and computing the platform fee.
+ * `amountCents` lets the configurator pass an authoritative total (tier × qty + add-ons);
+ * when omitted it falls back to the listing's base price.
+ */
+export async function createOrder(input: {
+  buyerId: string;
+  listingId: string;
+  amountCents?: number;
+}) {
   const listing = await db.listing.findUniqueOrThrow({ where: { id: input.listingId } });
+  const amountCents = input.amountCents ?? listing.priceCents;
   return db.order.create({
     data: {
       listingId: listing.id,
       buyerId: input.buyerId,
-      amountCents: listing.priceCents,
-      feeCents: platformFeeCents(listing.priceCents),
+      amountCents,
+      feeCents: platformFeeCents(amountCents),
       status: 'CREATED',
     },
   });

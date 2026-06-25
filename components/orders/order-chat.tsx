@@ -1,10 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
-type Msg = { id: string; senderId: string; body: string };
+type Msg = {
+  id: string;
+  senderId: string;
+  body: string;
+  system?: boolean;
+  attachmentUrl?: string | null;
+};
 
 export function OrderChat({
   orderId,
@@ -20,6 +29,7 @@ export function OrderChat({
   const t = useTranslations('Orders');
   const [messages, setMessages] = useState<Msg[]>(initial);
   const [text, setText] = useState('');
+  const endRef = useRef<HTMLDivElement>(null);
 
   async function load() {
     try {
@@ -39,6 +49,10 @@ export function OrderChat({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId]);
 
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [messages]);
+
   async function send(e: React.FormEvent) {
     e.preventDefault();
     const body = text.trim();
@@ -53,35 +67,69 @@ export function OrderChat({
   }
 
   return (
-    <section className="mt-12 border-t pt-6">
-      <h2 className="text-lg font-semibold">{t('chat')}</h2>
-      <ul className="mt-4 space-y-3">
+    <section className="mt-10 border-t border-border pt-6">
+      <h2 className="flex items-center gap-2 text-lg font-semibold">
+        <MessageCircle className="size-4 text-primary" />
+        {t('chat')}
+      </h2>
+
+      <div className="mt-4 max-h-96 space-y-3 overflow-y-auto pr-1" aria-live="polite">
         {messages.length === 0 && (
-          <li className="text-sm text-muted-foreground">{t('noMessages')}</li>
+          <p className="text-sm text-muted-foreground">{t('noMessages')}</p>
         )}
         {messages.map((m) => {
+          if (m.system) {
+            return (
+              <div key={m.id} className="flex justify-center">
+                <span className="rounded-full border border-border bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
+                  {m.body}
+                </span>
+              </div>
+            );
+          }
           const mine = m.senderId === userId;
           const role = m.senderId === buyerId ? t('buyer') : t('seller');
           return (
-            <li key={m.id} className={mine ? 'text-right' : ''}>
-              <span className="block text-xs text-muted-foreground">
+            <div
+              key={m.id}
+              className={cn('flex flex-col', mine ? 'items-end' : 'items-start')}
+            >
+              <span className="text-xs text-muted-foreground">
                 {role}
                 {mine ? ` (${t('you')})` : ''}
               </span>
-              <p className="mt-1 inline-block rounded-md bg-muted px-3 py-2 text-sm">
-                {m.body}
-              </p>
-            </li>
+              <div
+                className={cn(
+                  'mt-1 inline-block max-w-[85%] rounded-2xl px-3.5 py-2 text-sm',
+                  mine
+                    ? 'rounded-br-sm bg-primary/15 text-foreground'
+                    : 'rounded-bl-sm border border-border bg-card text-card-foreground'
+                )}
+              >
+                <p>{m.body}</p>
+                {m.attachmentUrl && (
+                  <a
+                    href={m.attachmentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-block text-xs text-primary underline"
+                  >
+                    {m.attachmentUrl.split('/').pop()}
+                  </a>
+                )}
+              </div>
+            </div>
           );
         })}
-      </ul>
+        <div ref={endRef} />
+      </div>
 
       <form onSubmit={send} className="mt-4 flex gap-2">
-        <input
+        <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t('messagePlaceholder')}
-          className="flex-1 rounded-md border px-3 py-2 text-sm"
+          className="h-9 flex-1"
         />
         <Button type="submit">{t('send')}</Button>
       </form>

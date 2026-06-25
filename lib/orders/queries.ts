@@ -7,6 +7,7 @@ export function getOrder(id: string) {
       listing: { include: { category: true, seller: true } },
       escrow: true,
       dispute: true,
+      review: true,
     },
   });
 }

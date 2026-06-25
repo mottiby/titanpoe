@@ -47,6 +47,13 @@ export async function becomeSeller(
   redirect('/sell');
 }
 
+const splitLines = (s: string) =>
+  s
+    .split('\n')
+    .map((x) => x.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+
 const createListingSchema = z.object({
   categoryId: z.string().min(1),
   titleEn: z.string().trim().min(3).max(100),
@@ -57,6 +64,12 @@ const createListingSchema = z.object({
   platform: z.enum(['PC', 'PS5', 'XBOX']),
   league: z.string().trim().min(1).max(40),
   leagueMode: z.enum(['SOFTCORE', 'HARDCORE', 'SSF_SOFTCORE', 'SSF_HARDCORE']),
+  badge: z.preprocess(
+    (v) => (v === '' || v == null ? undefined : v),
+    z.enum(['HOT', 'SALE', 'NEW', 'BEST_VALUE']).optional(),
+  ),
+  highlightsEn: z.string().optional().default(''),
+  highlightsRu: z.string().optional().default(''),
 });
 
 export async function createListing(
@@ -87,6 +100,9 @@ export async function createListing(
       platform: d.platform,
       league: d.league,
       leagueMode: d.leagueMode,
+      badge: d.badge ?? null,
+      highlightsEn: splitLines(d.highlightsEn),
+      highlightsRu: splitLines(d.highlightsRu),
     },
   });
 

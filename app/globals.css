@@ -8,8 +8,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
+  --font-heading: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -27,6 +28,13 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -48,83 +56,179 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
+/*
+ * Titanpoe2 design tokens — dark "arcane gaming" marketplace.
+ * Dark-first: :root and .dark carry the same palette so the app is dark by default.
+ * See docs/design/02-tokens.md and .claude/skills/titanpoe2-design-system.
+ */
+:root,
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0b0c10; /* near-black, slightly cool app canvas */
+  --foreground: #ecedf1;
+  --card: #14161c;
+  --card-foreground: #ecedf1;
+  --popover: #1a1d25;
+  --popover-foreground: #ecedf1;
+  --primary: #7b61ff; /* arcane violet — CTAs, links, active */
+  --primary-foreground: #ffffff;
+  --secondary: #1f232c;
+  --secondary-foreground: #ecedf1;
+  --muted: #1a1d25;
+  --muted-foreground: #9ca0ac;
+  --accent: #f5b544; /* ember gold — prices / value ONLY */
+  --accent-foreground: #1a1206;
+  --destructive: #f26d6d;
+  --destructive-foreground: #2a0a0a;
+  --success: #34d399;
+  --success-foreground: #04140d;
+  --warning: #fbbf24;
+  --warning-foreground: #1a1206;
+  --info: #60a5fa;
+  --info-foreground: #04101f;
+  --border: #262a33;
+  --input: #262a33;
+  --ring: #7b61ff; /* violet focus glow */
+  --radius: 0.75rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* premium ease */
+
+  /* next/font injects --font-inter / --font-space on <html>; fall back to a
+     system stack if absent so the build never depends on webfont fetch. */
+  --font-sans: var(--font-inter, "Inter"), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: var(--font-display-face, "Unbounded"), var(--font-sans);
+  --font-mono: ui-monospace, "SFMono-Regular", "Geist Mono", Menlo, Consolas,
+    monospace;
+
+  --chart-1: #7b61ff;
+  --chart-2: #f5b544;
+  --chart-3: #34d399;
+  --chart-4: #60a5fa;
+  --chart-5: #f26d6d;
+
+  --sidebar: #14161c;
+  --sidebar-foreground: #ecedf1;
+  --sidebar-primary: #7b61ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1f232c;
+  --sidebar-accent-foreground: #ecedf1;
+  --sidebar-border: #262a33;
+  --sidebar-ring: #7b61ff;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    min-height: 100dvh;
+  }
+  /* Subtle "crafted" depth: a near-black radial wash + faint grain overlay. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        1100px 600px at 50% -10%,
+        rgba(123, 97, 255, 0.06),
+        transparent 70%
+      ),
+      radial-gradient(
+        900px 500px at 100% 0%,
+        rgba(96, 165, 250, 0.04),
+        transparent 60%
+      );
+  }
+  h1,
+  h2,
+  .font-heading {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em; /* Unbounded runs wide — ease the tracking */
+  }
+  /* Prices and numeric figures align. */
+  .tabular-nums,
+  .price {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Guaranteed visible focus for links / summaries / custom controls. */
+  a:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+}
+
+@layer utilities {
+  /* Violet glow behind page heroes (use sparingly). */
+  .hero-glow {
+    position: relative;
+    isolation: isolate;
+  }
+  .hero-glow::before {
+    content: "";
+    position: absolute;
+    inset: -20% -10% auto -10%;
+    height: 420px;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      60% 70% at 50% 0%,
+      rgba(123, 97, 255, 0.22),
+      transparent 70%
+    );
+  }
+  /* Primary CTA glow ring. */
+  .glow-primary {
+    box-shadow:
+      0 0 0 1px rgba(123, 97, 255, 0.4),
+      0 6px 20px -8px rgba(123, 97, 255, 0.5);
+  }
+  /* Hairline top highlight for cards on dark. */
+  .card-sheen {
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+  }
+  /* Frosted-glass surface — nav, sticky panels, dropdowns, dialogs. */
+  .glass {
+    background: color-mix(in oklab, var(--card), transparent 28%);
+    backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  /* Slow ambient drift for hero glow blobs (disabled under reduced-motion). */
+  .float-a {
+    animation: float-slow 16s ease-in-out infinite;
+  }
+  .float-b {
+    animation: float-slow 22s ease-in-out infinite reverse;
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(3%, -5%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

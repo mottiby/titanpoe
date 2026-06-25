@@ -5,6 +5,7 @@ import { auth } from '@/auth';
 import { db } from '@/lib/db';
 import * as orders from '@/lib/orders/service';
 import { providerForSeller } from '@/lib/payments/select';
+import { notifyNewOrder, notifyDelivered, notifyCompleted } from '@/lib/orders/notify';
 
 async function requireUserId(): Promise<string> {
   const session = await auth();
@@ -25,6 +26,7 @@ export async function placeOrder(formData: FormData) {
 
   const order = await orders.createOrder({ buyerId: userId, listingId });
   await orders.payOrder(order.id, providerForSeller(listing.seller.stripeAcctId));
+  await notifyNewOrder(order.id);
   redirect(`/orders/${order.id}`);
 }
 
@@ -52,12 +54,14 @@ export async function sellerDeliver(formData: FormData) {
   const orderId = String(formData.get('orderId'));
   await authorize(orderId, 'seller');
   await orders.deliverOrder(orderId);
+  await notifyDelivered(orderId);
 }
 
 export async function buyerConfirm(formData: FormData) {
   const orderId = String(formData.get('orderId'));
   const order = await authorize(orderId, 'buyer');
   await orders.confirmCompletion(orderId, providerForSeller(order.listing.seller.stripeAcctId));
+  await notifyCompleted(orderId);
 }
 
 export async function buyerCancel(formData: FormData) {
@@ -71,23 +75,4 @@ export async function buyerDispute(formData: FormData) {
   const reason = String(formData.get('reason') ?? '').trim() || 'No reason provided';
   await authorize(orderId, 'buyer');
   await orders.openDispute(orderId, reason);
-}
-
-/** Either party posts a message in the order's chat thread. */
-export async function sendMessage(formData: FormData) {
-  const orderId = String(formData.get('orderId'));
-  const body = String(formData.get('body') ?? '').trim();
-  await authorize(orderId, 'party'); // ensures the caller is a party to the order
-  if (!body) return;
-
-  const session = await auth();
-  const senderId = session?.user?.id;
-  if (!senderId) redirect('/signin');
-
-  const convo = await db.conversation.upsert({
-    where: { orderId },
-    create: { orderId },
-    update: {},
-  });
-  await db.message.create({ data: { conversationId: convo.id, senderId, body } });
 }

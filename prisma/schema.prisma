@@ -85,8 +85,10 @@ model User {
   roles         Role[]         @default([BUYER])
   locale        String         @default("en")
   twoFactor     Boolean        @default(false)
+  balanceCents  Int            @default(0) // wallet balance (display); not a Stripe method
   sellerProfile SellerProfile?
   ordersBought  Order[]        @relation("buyer")
+  cartItems     CartItem[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -140,10 +142,27 @@ model Listing {
   tiers         ListingTier[]
   addons        ListingAddon[]
   orders        Order[]
+  cartItems     CartItem[]
   createdAt     DateTime      @default(now())
 
   @@index([categoryId])
   @@index([sellerId])
+}
+
+// A buyer's cart entry — a configured selection (tier x qty + add-ons).
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  tierId    String?
+  quantity  Int      @default(1)
+  addonIds  String[] @default([])
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([listingId])
 }
 
 // Optional configurable price tiers (e.g. boss runs / difficulty / pack size).

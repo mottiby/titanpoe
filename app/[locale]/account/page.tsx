@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/auth';
 import { logout } from '@/lib/auth/actions';
+import { getUserBalance } from '@/lib/cart/queries';
+import { formatPrice } from '@/lib/format';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,12 +21,25 @@ export default async function AccountPage({ params }: Props) {
 
   const t = await getTranslations('Account');
   const roles = session.user.roles ?? [];
+  const balanceCents = await getUserBalance(session.user.id);
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <h1 className="font-display text-3xl font-bold tracking-tight">{t('title')}</h1>
 
-      <Card className="mt-6 p-5">
+      <Card glass className="mt-6 p-5">
+        <div className="text-xs text-muted-foreground">{t('wallet')}</div>
+        <div className="mt-1 flex items-center justify-between gap-3">
+          <span className="font-display text-3xl font-bold text-accent tabular-nums">
+            {formatPrice(balanceCents, locale)}
+          </span>
+          <Button variant="outline" disabled>
+            {t('topUp')}
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="mt-4 p-5">
         <p className="text-sm text-muted-foreground">{session.user.email}</p>
         <div className="mt-4">
           <div className="text-xs text-muted-foreground">{t('roles')}</div>

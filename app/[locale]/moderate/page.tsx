@@ -51,12 +51,12 @@ export default async function ModeratePage({ params }: Props) {
                 <form action={resolveDisputeAction}>
                   <input type="hidden" name="orderId" value={o.id} />
                   <input type="hidden" name="outcome" value="REFUND" />
-                  <Button variant="outline">{t('refundBuyer')}</Button>
+                  <Button type="submit" variant="outline">{t('refundBuyer')}</Button>
                 </form>
                 <form action={resolveDisputeAction}>
                   <input type="hidden" name="orderId" value={o.id} />
                   <input type="hidden" name="outcome" value="RELEASE" />
-                  <Button>{t('releaseSeller')}</Button>
+                  <Button type="submit">{t('releaseSeller')}</Button>
                 </form>
               </div>
             </Card>

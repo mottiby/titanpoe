@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatPrice } from '@/lib/format';
+import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PriceTag } from './price-tag';
 import { placeConfiguredOrder } from '@/lib/orders/actions';
+import { addToCart } from '@/lib/cart/actions';
 
 type Tier = { id: string; nameEn: string; nameRu: string; priceCents: number };
 type Addon = { id: string; nameEn: string; nameRu: string; priceCents: number };
@@ -17,6 +19,7 @@ export type ConfiguratorLabels = {
   extras: string;
   total: string;
   order: string;
+  addToCart: string;
 };
 
 export function ProductConfigurator({
@@ -149,9 +152,21 @@ export function ProductConfigurator({
         <PriceTag cents={total} locale={locale} size="lg" />
       </div>
 
-      <Button type="submit" size="lg" className="w-full">
-        {labels.order}
-      </Button>
+      <div className="space-y-2">
+        <Button type="submit" size="lg" className="w-full">
+          {labels.order}
+        </Button>
+        <Button
+          type="submit"
+          formAction={addToCart}
+          variant="outline"
+          size="lg"
+          className="w-full"
+        >
+          <ShoppingCart className="size-4" />
+          {labels.addToCart}
+        </Button>
+      </div>
     </form>
   );
 }

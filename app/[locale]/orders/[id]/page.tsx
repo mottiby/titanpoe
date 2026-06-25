@@ -87,25 +87,25 @@ export default async function OrderPage({ params }: Props) {
         {isSeller && order.status === 'PAID' && (
           <form action={sellerStartWork}>
             <input type="hidden" name="orderId" value={order.id} />
-            <Button>{t('startWork')}</Button>
+            <Button type="submit">{t('startWork')}</Button>
           </form>
         )}
         {isSeller && order.status === 'IN_PROGRESS' && (
           <form action={sellerDeliver}>
             <input type="hidden" name="orderId" value={order.id} />
-            <Button>{t('deliver')}</Button>
+            <Button type="submit">{t('deliver')}</Button>
           </form>
         )}
         {isBuyer && order.status === 'DELIVERED' && (
           <form action={buyerConfirm}>
             <input type="hidden" name="orderId" value={order.id} />
-            <Button>{t('confirm')}</Button>
+            <Button type="submit">{t('confirm')}</Button>
           </form>
         )}
         {isBuyer && (order.status === 'CREATED' || order.status === 'PAID') && (
           <form action={buyerCancel}>
             <input type="hidden" name="orderId" value={order.id} />
-            <Button variant="outline">{t('cancel')}</Button>
+            <Button type="submit" variant="outline">{t('cancel')}</Button>
           </form>
         )}
         {isBuyer &&
@@ -118,7 +118,7 @@ export default async function OrderPage({ params }: Props) {
                 placeholder={t('disputeReason')}
                 className="h-9 flex-1 sm:max-w-xs"
               />
-              <Button variant="outline">{t('dispute')}</Button>
+              <Button type="submit" variant="outline">{t('dispute')}</Button>
             </form>
           )}
       </div>

@@ -195,8 +195,14 @@ async function main() {
   // Demo buyer (for completed orders + reviews)
   const buyer = await db.user.upsert({
     where: { email: 'demo.buyer@titanpoe2.local' },
-    update: {},
-    create: { email: 'demo.buyer@titanpoe2.local', name: 'Demo Buyer', roles: ['BUYER'], locale: 'en' },
+    update: { balanceCents: 4250 },
+    create: {
+      email: 'demo.buyer@titanpoe2.local',
+      name: 'Demo Buyer',
+      roles: ['BUYER'],
+      locale: 'en',
+      balanceCents: 4250,
+    },
   });
 
   // Listings (+ tiers, addons, optional completed order + review)

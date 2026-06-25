@@ -58,7 +58,16 @@
     "trustScore": "Excellent",
     "trustBasedOn": "based on {count} reviews",
     "activityLive": "Live",
-    "activityOrdered": "just ordered"
+    "activityOrdered": "just ordered",
+    "categoriesKicker": "Browse",
+    "howKicker": "How it works",
+    "guardKicker": "Trust & safety",
+    "featuredKicker": "Marketplace",
+    "testimonialsKicker": "Reviews",
+    "faqKicker": "FAQ",
+    "hotKicker": "Limited time",
+    "hotTitle": "Hot offers",
+    "hotSubtitle": "The best deals on right now."
   },
   "Trust": {
     "escrow": "Escrow-protected",
@@ -84,6 +93,7 @@
     "catalog": "Catalog",
     "sell": "Sell",
     "orders": "Orders",
+    "cart": "Cart",
     "moderate": "Moderate",
     "signIn": "Sign in"
   },
@@ -102,7 +112,18 @@
   "Account": {
     "title": "Your account",
     "roles": "Roles",
+    "wallet": "Wallet",
+    "balance": "Balance",
+    "topUp": "Top up",
     "signOut": "Sign out"
+  },
+  "Cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty.",
+    "emptyCta": "Browse services",
+    "total": "Total",
+    "checkout": "Checkout",
+    "remove": "Remove"
   },
   "Seller": {
     "becomeTitle": "Become a seller",
@@ -160,6 +181,7 @@
     "fulfillment": "Fulfillment",
     "mode": "Mode",
     "from": "from",
+    "view": "View",
     "sort": "Sort",
     "sortNewest": "Newest",
     "sortPriceAsc": "Price: low to high",
@@ -178,6 +200,7 @@
     "extras": "Extras",
     "total": "Total",
     "orderNow": "Order now",
+    "addToCart": "Add to cart",
     "description": "Description",
     "aboutSeller": "About the seller",
     "reviews": "Reviews",
@@ -199,6 +222,8 @@
     "disputeReason": "Reason",
     "escrowNote": "Your payment is protected by escrow.",
     "orderPlaced": "Order placed — funds are held in escrow.",
+    "addedToCart": "Added to cart.",
+    "ordersPlaced": "Orders placed — funds are held in escrow.",
     "chat": "Chat",
     "noMessages": "No messages yet.",
     "buyer": "Buyer",

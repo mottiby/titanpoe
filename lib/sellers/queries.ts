@@ -1,5 +1,9 @@
 import { db } from '@/lib/db';
-import type { Platform, LeagueMode } from '@/lib/generated/prisma/client';
+import type {
+  Platform,
+  LeagueMode,
+  ListingBadge,
+} from '@/lib/generated/prisma/client';
 
 export function getSellerProfile(userId: string) {
   return db.sellerProfile.findUnique({ where: { userId } });
@@ -56,6 +60,16 @@ export function getListing(id: string) {
       tiers: { orderBy: { position: 'asc' } },
       addons: true,
     },
+  });
+}
+
+/** Listings flagged HOT or SALE — for the home "Hot offers" section. */
+export function getHotOffers(take = 4) {
+  return db.listing.findMany({
+    where: { active: true, badge: { in: ['HOT', 'SALE'] as ListingBadge[] } },
+    include: { category: true, seller: true, tiers: { select: { priceCents: true } } },
+    orderBy: { createdAt: 'desc' },
+    take,
   });
 }
 

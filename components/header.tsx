@@ -1,9 +1,11 @@
 import { getLocale, getTranslations } from 'next-intl/server';
-import { Menu, ChevronDown } from 'lucide-react';
+import { Menu, ChevronDown, ShoppingCart } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { auth } from '@/auth';
 import { getCategories } from '@/lib/sellers/queries';
+import { getCartCount, getUserBalance } from '@/lib/cart/queries';
+import { formatPrice } from '@/lib/format';
 import { categoryIcon } from '@/components/marketplace/category-icons';
 
 export async function Header() {
@@ -14,6 +16,9 @@ export async function Header() {
   const categories = await getCategories();
   const roles = session?.user?.roles ?? [];
   const isModerator = roles.includes('MODERATOR') || roles.includes('ADMIN');
+  const userId = session?.user?.id;
+  const cartCount = userId ? await getCartCount(userId) : 0;
+  const balanceCents = userId ? await getUserBalance(userId) : 0;
 
   const links = [
     { href: '/sell', label: t('sell') },
@@ -73,6 +78,26 @@ export async function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
+          {userId && (
+            <Link
+              href="/account"
+              className="hidden items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-semibold text-accent tabular-nums sm:inline-flex"
+            >
+              {formatPrice(balanceCents, active)}
+            </Link>
+          )}
+          <Link
+            href="/cart"
+            aria-label={t('cart')}
+            className="relative grid size-9 place-items-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ShoppingCart className="size-4" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 grid min-w-[1rem] place-items-center rounded-full bg-primary px-1 text-[0.6rem] font-semibold text-primary-foreground tabular-nums">
+                {cartCount}
+              </span>
+            )}
+          </Link>
           <span className="hidden items-center gap-1 sm:flex">
             {routing.locales.map((l) => (
               <Link key={l} href="/" locale={l} className={localeLink(l)}>

@@ -47,7 +47,12 @@ export default async function CatalogPage({ params, searchParams }: Props) {
   const ActiveIcon = activeCat ? categoryIcon(activeCat.slug) : null;
   const tint = activeCat ? categoryTint(activeCat.slug) : '';
 
-  const cardLabels = { eta: t('eta'), hours: t('hours'), from: t('from') };
+  const cardLabels = {
+    eta: t('eta'),
+    hours: t('hours'),
+    from: t('from'),
+    view: t('view'),
+  };
   const badgeLabels = {
     HOT: t('badgeHot'),
     SALE: t('badgeSale'),

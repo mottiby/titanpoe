@@ -69,7 +69,7 @@ export default async function SellPage({ params }: Props) {
           <>
             <p className="mt-1 text-sm text-muted-foreground">{t('payoutsHint')}</p>
             <form action={startStripeOnboarding} className="mt-3">
-              <Button variant="outline">{t('connectStripe')}</Button>
+              <Button type="submit" variant="outline">{t('connectStripe')}</Button>
             </form>
           </>
         )}

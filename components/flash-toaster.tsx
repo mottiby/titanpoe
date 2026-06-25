@@ -19,7 +19,11 @@ export function FlashToaster() {
 
   useEffect(() => {
     if (!flash) return;
-    const map: Record<string, string> = { orderPlaced: t('orderPlaced') };
+    const map: Record<string, string> = {
+      orderPlaced: t('orderPlaced'),
+      addedToCart: t('addedToCart'),
+      ordersPlaced: t('ordersPlaced'),
+    };
     const m = map[flash];
     if (!m) return;
 

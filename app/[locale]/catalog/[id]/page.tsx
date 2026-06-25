@@ -71,7 +71,12 @@ export default async function ListingPage({ params }: Props) {
     verified: tr('verified'),
     chat: tr('chat'),
   };
-  const cardLabels = { eta: t('eta'), hours: t('hours'), from: t('from') };
+  const cardLabels = {
+    eta: t('eta'),
+    hours: t('hours'),
+    from: t('from'),
+    view: t('view'),
+  };
   const badgeLabels = {
     HOT: t('badgeHot'),
     SALE: t('badgeSale'),
@@ -231,6 +236,7 @@ export default async function ListingPage({ params }: Props) {
                   extras: t('extras'),
                   total: t('total'),
                   order: t('orderNow'),
+                  addToCart: t('addToCart'),
                 }}
               />
             )}

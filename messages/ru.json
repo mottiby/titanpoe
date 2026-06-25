@@ -58,7 +58,16 @@
     "trustScore": "Отлично",
     "trustBasedOn": "на основе {count} отзывов",
     "activityLive": "Онлайн",
-    "activityOrdered": "только что заказали"
+    "activityOrdered": "только что заказали",
+    "categoriesKicker": "Категории",
+    "howKicker": "Как это работает",
+    "guardKicker": "Безопасность",
+    "featuredKicker": "Маркетплейс",
+    "testimonialsKicker": "Отзывы",
+    "faqKicker": "Вопросы",
+    "hotKicker": "Ограниченно",
+    "hotTitle": "Горячие офферы",
+    "hotSubtitle": "Лучшие предложения прямо сейчас."
   },
   "Trust": {
     "escrow": "Защита эскроу",
@@ -84,6 +93,7 @@
     "catalog": "Каталог",
     "sell": "Продавать",
     "orders": "Заказы",
+    "cart": "Корзина",
     "moderate": "Модерация",
     "signIn": "Войти"
   },
@@ -102,7 +112,18 @@
   "Account": {
     "title": "Ваш аккаунт",
     "roles": "Роли",
+    "wallet": "Кошелёк",
+    "balance": "Баланс",
+    "topUp": "Пополнить",
     "signOut": "Выйти"
+  },
+  "Cart": {
+    "title": "Корзина",
+    "empty": "Корзина пуста.",
+    "emptyCta": "Смотреть услуги",
+    "total": "Итого",
+    "checkout": "Оформить",
+    "remove": "Удалить"
   },
   "Seller": {
     "becomeTitle": "Стать продавцом",
@@ -160,6 +181,7 @@
     "fulfillment": "Способ выполнения",
     "mode": "Режим",
     "from": "от",
+    "view": "Открыть",
     "sort": "Сортировка",
     "sortNewest": "Новые",
     "sortPriceAsc": "Цена: по возрастанию",
@@ -178,6 +200,7 @@
     "extras": "Доп-опции",
     "total": "Итого",
     "orderNow": "Заказать",
+    "addToCart": "В корзину",
     "description": "Описание",
     "aboutSeller": "О продавце",
     "reviews": "Отзывы",
@@ -199,6 +222,8 @@
     "disputeReason": "Причина",
     "escrowNote": "Ваш платёж защищён эскроу.",
     "orderPlaced": "Заказ создан — деньги в эскроу.",
+    "addedToCart": "Добавлено в корзину.",
+    "ordersPlaced": "Заказы созданы — деньги в эскроу.",
     "chat": "Чат",
     "noMessages": "Сообщений пока нет.",
     "buyer": "Покупатель",

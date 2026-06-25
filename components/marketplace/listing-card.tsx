@@ -32,7 +32,7 @@ export type ListingCardData = {
   tiers?: { priceCents: number }[];
 };
 
-type Labels = { eta: string; hours: string; from?: string };
+type Labels = { eta: string; hours: string; from?: string; view?: string };
 
 const badgeVariant: Record<
   string,
@@ -90,7 +90,7 @@ export function ListingCard({
   return (
     <Card
       interactive
-      className="group flex h-full flex-col overflow-hidden focus-within:-translate-y-0.5 focus-within:border-primary/40"
+      className="group flex h-full flex-col overflow-hidden focus-within:-translate-y-0.5 focus-within:border-primary/40 hover:shadow-[0_0_0_1px_rgba(123,97,255,0.22),0_18px_42px_-18px_rgba(123,97,255,0.45)]"
     >
       <Link
         href={`/catalog/${listing.id}`}
@@ -100,13 +100,19 @@ export function ListingCard({
           <ListingArt
             slug={listing.category.slug}
             seed={listing.id}
-            className="aspect-[16/9] transition-transform duration-300 ease-[var(--ease-out)] group-hover:scale-[1.05]"
+            className="aspect-[16/9] transition-transform duration-500 ease-[var(--ease-out)] group-hover:scale-[1.06]"
           />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           {listing.badge && (
             <span className="absolute top-2 left-2">
               <Badge variant={badgeVariant[listing.badge] ?? "neutral"}>
                 {badgeLabels?.[listing.badge] ?? listing.badge}
               </Badge>
+            </span>
+          )}
+          {labels.view && (
+            <span className="pointer-events-none absolute right-2 bottom-2 inline-flex translate-y-1 items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground opacity-0 shadow-[0_6px_20px_-8px_rgba(123,97,255,0.7)] transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              {labels.view} →
             </span>
           )}
         </div>

@@ -14,11 +14,16 @@ export class ManualPaymentProvider implements PaymentProvider {
     sellerRef: string;
     amount: Money;
     feeCents: number;
+    holdRef: string;
   }): Promise<PaymentRef> {
     return { providerRef: `manual_release_${input.orderId}` };
   }
 
-  async refund(input: { orderId: string; amount: Money }): Promise<PaymentRef> {
+  async refund(input: {
+    orderId: string;
+    amount: Money;
+    holdRef: string;
+  }): Promise<PaymentRef> {
     return { providerRef: `manual_refund_${input.orderId}` };
   }
 }

@@ -8,6 +8,7 @@
     "catalog": "Каталог",
     "sell": "Продавать",
     "orders": "Заказы",
+    "moderate": "Модерация",
     "signIn": "Войти"
   },
   "Auth": {
@@ -51,7 +52,9 @@
     "platform": "Платформа",
     "league": "Лига",
     "leagueMode": "Режим лиги",
-    "createCta": "Опубликовать листинг"
+    "createCta": "Опубликовать листинг",
+    "connectStripe": "Подключить выплаты Stripe",
+    "stripeConnected": "Выплаты Stripe подключены ✓"
   },
   "Catalog": {
     "title": "Каталог",
@@ -77,6 +80,13 @@
     "cancel": "Отменить",
     "dispute": "Открыть спор",
     "disputeReason": "Причина",
+    "chat": "Чат",
+    "noMessages": "Сообщений пока нет.",
+    "buyer": "Покупатель",
+    "seller": "Продавец",
+    "you": "вы",
+    "messagePlaceholder": "Введите сообщение…",
+    "send": "Отправить",
     "status": {
       "CREATED": "Создан",
       "PAID": "Оплачен (в эскроу)",
@@ -87,5 +97,13 @@
       "REFUNDED": "Возвращён",
       "CANCELLED": "Отменён"
     }
+  },
+  "Moderate": {
+    "title": "Разрешение споров",
+    "none": "Открытых споров нет.",
+    "buyer": "Покупатель",
+    "reason": "Причина",
+    "refundBuyer": "Вернуть покупателю",
+    "releaseSeller": "Выплатить продавцу"
   }
 }

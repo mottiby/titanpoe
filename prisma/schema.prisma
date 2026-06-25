@@ -118,7 +118,7 @@ model Listing {
   descriptionEn String        @default("")
   descriptionRu String        @default("")
   priceCents    Int
-  currency      String        @default("usd")
+  currency      String        @default("eur")
   etaHours      Int
   fulfillment   Fulfillment
   platform      Platform

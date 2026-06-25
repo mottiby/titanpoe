@@ -8,6 +8,7 @@
     "catalog": "Catalog",
     "sell": "Sell",
     "orders": "Orders",
+    "moderate": "Moderate",
     "signIn": "Sign in"
   },
   "Auth": {
@@ -51,7 +52,9 @@
     "platform": "Platform",
     "league": "League",
     "leagueMode": "League mode",
-    "createCta": "Publish listing"
+    "createCta": "Publish listing",
+    "connectStripe": "Connect Stripe payouts",
+    "stripeConnected": "Stripe payouts connected ✓"
   },
   "Catalog": {
     "title": "Catalog",
@@ -77,6 +80,13 @@
     "cancel": "Cancel",
     "dispute": "Open dispute",
     "disputeReason": "Reason",
+    "chat": "Chat",
+    "noMessages": "No messages yet.",
+    "buyer": "Buyer",
+    "seller": "Seller",
+    "you": "you",
+    "messagePlaceholder": "Type a message…",
+    "send": "Send",
     "status": {
       "CREATED": "Created",
       "PAID": "Paid (in escrow)",
@@ -87,5 +97,13 @@
       "REFUNDED": "Refunded",
       "CANCELLED": "Cancelled"
     }
+  },
+  "Moderate": {
+    "title": "Dispute resolution",
+    "none": "No open disputes.",
+    "buyer": "Buyer",
+    "reason": "Reason",
+    "refundBuyer": "Refund buyer",
+    "releaseSeller": "Release to seller"
   }
 }

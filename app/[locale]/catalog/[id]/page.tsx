@@ -34,7 +34,7 @@ export default async function ListingPage({ params }: Props) {
       <h1 className="mt-4 text-3xl font-bold">
         {locale === 'ru' ? listing.titleRu : listing.titleEn}
       </h1>
-      <p className="mt-2 text-2xl font-semibold">${(listing.priceCents / 100).toFixed(2)}</p>
+      <p className="mt-2 text-2xl font-semibold">€{(listing.priceCents / 100).toFixed(2)}</p>
 
       <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
         {row('Category', locale === 'ru' ? listing.category.nameRu : listing.category.nameEn)}

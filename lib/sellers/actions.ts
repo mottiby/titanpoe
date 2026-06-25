@@ -3,8 +3,10 @@
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
 import { db } from '@/lib/db';
 import { auth } from '@/auth';
+import { createConnectAccount, createOnboardingLink } from '@/lib/payments/connect';
 
 export type SellerActionState = { error?: string } | undefined;
 
@@ -90,4 +92,34 @@ export async function createListing(
 
   revalidatePath('/catalog');
   redirect(`/catalog/${listing.id}`);
+}
+
+/** Create (if needed) the seller's Stripe Connect account and start hosted onboarding. */
+export async function startStripeOnboarding() {
+  const session = await auth();
+  if (!session?.user?.id) redirect('/signin');
+
+  const profile = await db.sellerProfile.findUnique({
+    where: { userId: session.user.id },
+  });
+  if (!profile) redirect('/sell');
+
+  let acctId = profile.stripeAcctId;
+  if (!acctId) {
+    acctId = await createConnectAccount(
+      session.user.email ?? `seller_${profile.id}@example.com`,
+    );
+    await db.sellerProfile.update({
+      where: { id: profile.id },
+      data: { stripeAcctId: acctId },
+    });
+  }
+
+  const h = await headers();
+  const host = h.get('host') ?? 'localhost:3000';
+  const proto = h.get('x-forwarded-proto') ?? 'http';
+  const origin = `${proto}://${host}`;
+
+  const url = await createOnboardingLink(acctId, `${origin}/sell`, `${origin}/sell`);
+  redirect(url);
 }

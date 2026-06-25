@@ -42,7 +42,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
               <Link href={`/catalog/${l.id}`} className="block">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{locale === 'ru' ? l.titleRu : l.titleEn}</span>
-                  <span className="font-semibold">${(l.priceCents / 100).toFixed(2)}</span>
+                  <span className="font-semibold">€{(l.priceCents / 100).toFixed(2)}</span>
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">
                   {locale === 'ru' ? l.category.nameRu : l.category.nameEn} · {l.league} · {l.platform}

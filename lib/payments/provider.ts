@@ -22,8 +22,13 @@ export interface PaymentProvider {
     sellerRef: string;
     amount: Money;
     feeCents: number;
+    holdRef: string; // the hold's providerRef (e.g. PaymentIntent id)
   }): Promise<PaymentRef>;
 
   /** Refund escrowed funds to the buyer (full or partial). */
-  refund(input: { orderId: string; amount: Money }): Promise<PaymentRef>;
+  refund(input: {
+    orderId: string;
+    amount: Money;
+    holdRef: string; // the hold's providerRef (e.g. PaymentIntent id)
+  }): Promise<PaymentRef>;
 }

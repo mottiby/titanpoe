@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/auth';
 import { getSellerProfile, getMyListings } from '@/lib/sellers/queries';
 import { BecomeSellerForm } from '@/components/sellers/become-seller-form';
+import { startStripeOnboarding } from '@/lib/sellers/actions';
 import { Link } from '@/i18n/navigation';
 
 type Props = { params: Promise<{ locale: string }> };
@@ -46,6 +47,21 @@ export default async function SellPage({ params }: Props) {
         </Link>
       </div>
 
+      <div className="mt-4">
+        {profile.stripeAcctId ? (
+          <p className="text-sm text-muted-foreground">{t('stripeConnected')}</p>
+        ) : (
+          <form action={startStripeOnboarding}>
+            <button
+              type="submit"
+              className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
+            >
+              {t('connectStripe')}
+            </button>
+          </form>
+        )}
+      </div>
+
       <ul className="mt-8 divide-y">
         {listings.length === 0 && (
           <p className="text-muted-foreground">{t('noListings')}</p>
@@ -56,7 +72,7 @@ export default async function SellPage({ params }: Props) {
               {locale === 'ru' ? l.titleRu : l.titleEn}
             </Link>
             <span className="ml-2 text-sm text-muted-foreground">
-              ${(l.priceCents / 100).toFixed(2)} · {locale === 'ru' ? l.category.nameRu : l.category.nameEn}
+              €{(l.priceCents / 100).toFixed(2)} · {locale === 'ru' ? l.category.nameRu : l.category.nameEn}
             </span>
           </li>
         ))}

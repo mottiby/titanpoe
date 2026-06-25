@@ -26,3 +26,11 @@ export function getSellerOrders(sellerProfileId: string) {
     orderBy: { createdAt: 'desc' },
   });
 }
+
+export async function getOrderMessages(orderId: string) {
+  const convo = await db.conversation.findUnique({
+    where: { orderId },
+    include: { messages: { orderBy: { createdAt: 'asc' } } },
+  });
+  return convo?.messages ?? [];
+}

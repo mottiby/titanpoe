@@ -7,6 +7,8 @@ export async function Header() {
   const active = await getLocale();
   const t = await getTranslations('Nav');
   const session = await auth();
+  const roles = session?.user?.roles ?? [];
+  const isModerator = roles.includes('MODERATOR') || roles.includes('ADMIN');
 
   return (
     <header className="border-b">
@@ -24,6 +26,11 @@ export async function Header() {
           {session?.user && (
             <Link href="/orders" className="hover:underline">
               {t('orders')}
+            </Link>
+          )}
+          {isModerator && (
+            <Link href="/moderate" className="hover:underline">
+              {t('moderate')}
             </Link>
           )}
           {session?.user ? (

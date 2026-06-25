@@ -4,11 +4,12 @@ import { assertTransition, type OrderStatus } from '@/lib/orders/state-machine';
 import { ManualPaymentProvider } from '@/lib/payments/manual-provider';
 import type { Money, PaymentProvider } from '@/lib/payments/provider';
 
-// Default provider is the manual stub until a real PSP is wired (docs/03 §13).
+// Default provider is the manual stub until a real PSP is wired per category
+// (Stripe for services, gaming PSP for currency/items — see docs/03 §13).
 const defaultProvider: PaymentProvider = new ManualPaymentProvider();
 
 function money(order: { amountCents: number }): Money {
-  return { amountCents: order.amountCents, currency: 'usd' };
+  return { amountCents: order.amountCents, currency: 'eur' };
 }
 
 /** Create a CREATED order for a listing, pricing it and computing the platform fee. */
@@ -67,7 +68,7 @@ export async function deliverOrder(orderId: string) {
 export async function confirmCompletion(orderId: string, provider: PaymentProvider = defaultProvider) {
   const order = await db.order.findUniqueOrThrow({
     where: { id: orderId },
-    include: { listing: { include: { seller: true } } },
+    include: { listing: { include: { seller: true } }, escrow: true },
   });
   assertTransition(order.status as OrderStatus, 'COMPLETED');
 
@@ -77,6 +78,7 @@ export async function confirmCompletion(orderId: string, provider: PaymentProvid
     sellerRef,
     amount: money(order),
     feeCents: order.feeCents,
+    holdRef: order.escrow?.stripePaymentId ?? '',
   });
 
   return db.order.update({
@@ -91,11 +93,18 @@ export async function confirmCompletion(orderId: string, provider: PaymentProvid
 
 /** Cancel an order; refunds the buyer if funds were already held. -> CANCELLED. */
 export async function cancelOrder(orderId: string, provider: PaymentProvider = defaultProvider) {
-  const order = await loadOrder(orderId);
+  const order = await db.order.findUniqueOrThrow({
+    where: { id: orderId },
+    include: { escrow: true },
+  });
   assertTransition(order.status as OrderStatus, 'CANCELLED');
 
-  if (order.status === 'PAID') {
-    await provider.refund({ orderId, amount: money(order) });
+  if (order.status === 'PAID' && order.escrow) {
+    await provider.refund({
+      orderId,
+      amount: money(order),
+      holdRef: order.escrow.stripePaymentId,
+    });
     await db.escrowTxn.update({ where: { orderId }, data: { refundedAt: new Date() } });
   }
   return db.order.update({ where: { id: orderId }, data: { status: 'CANCELLED' } });
@@ -120,19 +129,30 @@ export async function resolveDispute(
 ) {
   const order = await db.order.findUniqueOrThrow({
     where: { id: orderId },
-    include: { listing: { include: { seller: true } } },
+    include: { listing: { include: { seller: true } }, escrow: true },
   });
   const target: OrderStatus = outcome === 'REFUND' ? 'REFUNDED' : 'COMPLETED';
   assertTransition(order.status as OrderStatus, target);
 
+  const holdRef = order.escrow?.stripePaymentId ?? '';
+
   if (outcome === 'REFUND') {
-    await provider.refund({ orderId, amount: money(order) });
+    await provider.refund({ orderId, amount: money(order), holdRef });
     await db.escrowTxn.update({ where: { orderId }, data: { refundedAt: new Date() } });
     await db.dispute.update({ where: { orderId }, data: { state: 'RESOLVED_REFUND' } });
   } else {
     const sellerRef = order.listing.seller.stripeAcctId ?? order.listing.seller.id;
-    const release = await provider.release({ orderId, sellerRef, amount: money(order), feeCents: order.feeCents });
-    await db.escrowTxn.update({ where: { orderId }, data: { releasedAt: new Date(), stripeTransferId: release.providerRef } });
+    const release = await provider.release({
+      orderId,
+      sellerRef,
+      amount: money(order),
+      feeCents: order.feeCents,
+      holdRef,
+    });
+    await db.escrowTxn.update({
+      where: { orderId },
+      data: { releasedAt: new Date(), stripeTransferId: release.providerRef },
+    });
     await db.dispute.update({ where: { orderId }, data: { state: 'RESOLVED_RELEASE' } });
   }
   return db.order.update({ where: { id: orderId }, data: { status: target } });

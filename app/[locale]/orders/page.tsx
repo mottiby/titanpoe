@@ -34,7 +34,7 @@ export default async function OrdersPage({ params }: Props) {
       >
         <span>{locale === 'ru' ? o.listing.titleRu : o.listing.titleEn}</span>
         <span className="text-sm text-muted-foreground">
-          ${(o.amountCents / 100).toFixed(2)} · {t(`status.${o.status}`)}
+          €{(o.amountCents / 100).toFixed(2)} · {t(`status.${o.status}`)}
         </span>
       </Link>
     </li>

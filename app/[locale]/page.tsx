@@ -137,7 +137,7 @@ export default async function HomePage({ params }: Props) {
 
           {featured[0] && (
             <FadeIn delay={0.18} className="hidden lg:block">
-              <div className="relative mx-auto max-w-sm">
+              <div className="relative mx-auto w-full max-w-md lg:ml-auto">
                 <ListingCard
                   listing={featured[0]}
                   locale={locale}
@@ -191,7 +191,7 @@ export default async function HomePage({ params }: Props) {
                 }
               />
             </Reveal>
-            <Stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {hotOffers.map((l) => (
                 <StaggerItem key={l.id}>
                   <ListingCard

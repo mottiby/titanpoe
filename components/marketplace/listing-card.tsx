@@ -162,18 +162,19 @@ export function ListingCard({
             </Badge>
           </div>
 
-          <div className="mt-auto flex items-end justify-between gap-3 border-t border-border/60 pt-3">
+          <div className="mt-auto flex items-end justify-between gap-2 border-t border-border/60 pt-3">
             {listing.seller ? (
               <SellerBadge
+                className="min-w-0 flex-1"
                 name={listing.seller.displayName}
                 ratingAvg={listing.seller.ratingAvg}
                 ratingCount={listing.seller.ratingCount}
                 verified={listing.seller.kycStatus === "VERIFIED"}
               />
             ) : (
-              <span />
+              <span className="flex-1" />
             )}
-            <div className="text-right">
+            <div className="shrink-0 text-right">
               {onSale && (
                 <div className="flex items-center justify-end gap-1.5">
                   <span className="text-xs text-muted-foreground line-through">

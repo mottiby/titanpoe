@@ -10,7 +10,10 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const db = new PrismaClient({ adapter });
 
 const LEAGUE = 'Return of the Ancients';
-const euro = (n: number) => Math.round(n * 100);
+// Titanpoe lists ~10% under the market (overgear). Applied to every price
+// (base, compare-at, tiers, add-ons) since they all go through euro().
+const PRICE_FACTOR = 0.9;
+const euro = (n: number) => Math.round(n * 100 * PRICE_FACTOR);
 const fee = (cents: number) => Math.round(cents * 0.15);
 
 type SellerSeed = {

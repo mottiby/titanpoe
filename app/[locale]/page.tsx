@@ -6,6 +6,10 @@ import {
   BadgeCheck,
   Lock,
   Flame,
+  Map,
+  Swords,
+  Trophy,
+  Hammer,
 } from 'lucide-react';
 import {
   getCatalog,
@@ -116,6 +120,12 @@ export default async function HomePage({ params }: Props) {
     { node: '24/7', label: t('statSupport') },
   ];
   const faq = [1, 2, 3, 4, 5].map((n) => ({ q: t(`faqQ${n}`), a: t(`faqA${n}`) }));
+  const endgame = [
+    { icon: Map, title: t('endgame1Title'), desc: t('endgame1Desc') },
+    { icon: Swords, title: t('endgame2Title'), desc: t('endgame2Desc') },
+    { icon: Trophy, title: t('endgame3Title'), desc: t('endgame3Desc') },
+    { icon: Hammer, title: t('endgame4Title'), desc: t('endgame4Desc') },
+  ];
 
   return (
     <main>
@@ -432,6 +442,31 @@ export default async function HomePage({ params }: Props) {
           </h2>
           <p className="mt-2 leading-relaxed text-muted-foreground">{t('leagueBody')}</p>
         </Reveal>
+      </section>
+
+      {/* Endgame coverage */}
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <Reveal>
+          <SectionHeading
+            kicker={t('endgameKicker')}
+            title={t('endgameTitle')}
+            sub={t('endgameSubtitle')}
+          />
+        </Reveal>
+        <Stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {endgame.map(({ icon: Icon, title, desc }) => (
+            <StaggerItem
+              key={title}
+              className="card-sheen rounded-lg border border-border bg-card p-5"
+            >
+              <span className="grid size-9 place-items-center rounded-md bg-primary/12 text-primary">
+                <Icon className="size-4" />
+              </span>
+              <h3 className="mt-3 font-medium">{title}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
+            </StaggerItem>
+          ))}
+        </Stagger>
       </section>
 
       {/* What we cover */}

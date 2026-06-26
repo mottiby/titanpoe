@@ -74,7 +74,18 @@
     "sellersServices": "active services",
     "coverKicker": "What we cover",
     "coverTitle": "Services for every part of PoE2",
-    "coverSubtitle": "From fresh-start currency to pinnacle boss carries — pick what you need."
+    "coverSubtitle": "From fresh-start currency to pinnacle boss carries — pick what you need.",
+    "endgameKicker": "Current league",
+    "endgameTitle": "Covered across the whole endgame",
+    "endgameSubtitle": "Wherever you are in Path of Exile 2, there's a seller for it.",
+    "endgame1Title": "Atlas & maps",
+    "endgame1Desc": "Progress the Atlas, farm Waystones and clear maps to open up your endgame.",
+    "endgame2Title": "Pinnacle bosses",
+    "endgame2Desc": "Carries for the toughest bosses — fast, account-safe party-play.",
+    "endgame3Title": "Trials of Ascendancy",
+    "endgame3Desc": "Sekhemas and Chaos trials cleared so you can lock in your ascendancy.",
+    "endgame4Title": "Crafting & economy",
+    "endgame4Desc": "Custom crafts and bulk currency to fund the build you actually want."
   },
   "Trust": {
     "escrow": "Escrow-protected",

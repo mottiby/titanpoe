@@ -104,6 +104,28 @@ export function getRelatedListings(categoryId: string, excludeId: string, take =
   });
 }
 
+/** Verified sellers with active listings, best-rated first — for the home showcase. */
+export function getTopSellers(take = 4) {
+  return db.sellerProfile.findMany({
+    where: { kycStatus: 'VERIFIED', listings: { some: { active: true } } },
+    include: { _count: { select: { listings: true } } },
+    orderBy: [{ ratingAvg: 'desc' }, { ratingCount: 'desc' }],
+    take,
+  });
+}
+
+/** Cheapest active listing price per categoryId — for "from €X" category blurbs. */
+export async function getCategoryFromPrices(): Promise<Record<string, number>> {
+  const rows = await db.listing.groupBy({
+    by: ['categoryId'],
+    where: { active: true },
+    _min: { priceCents: true },
+  });
+  const map: Record<string, number> = {};
+  for (const r of rows) if (r._min.priceCents != null) map[r.categoryId] = r._min.priceCents;
+  return map;
+}
+
 export function getMyListings(sellerId: string) {
   return db.listing.findMany({
     where: { sellerId },

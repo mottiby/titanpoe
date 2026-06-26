@@ -13,6 +13,8 @@ import {
   getFeaturedReviews,
   getReviewStats,
   getHotOffers,
+  getTopSellers,
+  getCategoryFromPrices,
 } from '@/lib/sellers/queries';
 import { Link } from '@/i18n/navigation';
 import { buttonVariants } from '@/components/ui/button';
@@ -21,10 +23,14 @@ import { TrustScore } from '@/components/marketplace/trust-score';
 import { ActivityTicker } from '@/components/marketplace/activity-ticker';
 import { ListingCard } from '@/components/marketplace/listing-card';
 import { CategoryCard } from '@/components/marketplace/category-card';
+import { CategoryBlurbCard } from '@/components/marketplace/category-blurb-card';
+import { SellerShowcaseCard } from '@/components/marketplace/seller-showcase-card';
 import { SectionHeading } from '@/components/marketplace/section-heading';
 import { ReviewCard } from '@/components/marketplace/reviews';
 import { Faq } from '@/components/marketplace/faq';
 import { HeroArt } from '@/components/marketplace/hero-art';
+import { FulfillmentCard } from '@/components/marketplace/fulfillment-card';
+import { FULFILLMENT_KEYS } from '@/lib/fulfillment';
 import { FadeIn, Reveal, Stagger, StaggerItem, CountUp } from '@/components/motion/motion';
 
 type Props = { params: Promise<{ locale: string }> };
@@ -36,14 +42,26 @@ export default async function HomePage({ params }: Props) {
   const t = await getTranslations('HomePage');
   const tr = await getTranslations('Trust');
   const tc = await getTranslations('Catalog');
+  const td = await getTranslations('Delivery');
+  const tsl = await getTranslations('Seller');
+  const tcat = await getTranslations('Categories');
 
-  const [categories, listings, reviews, reviewStats, hotOffers] = await Promise.all([
-    getCategories(),
-    getCatalog(),
-    getFeaturedReviews(6),
-    getReviewStats(),
-    getHotOffers(4),
-  ]);
+  const [categories, listings, reviews, reviewStats, hotOffers, topSellers, fromPrices] =
+    await Promise.all([
+      getCategories(),
+      getCatalog(),
+      getFeaturedReviews(6),
+      getReviewStats(),
+      getHotOffers(4),
+      getTopSellers(4),
+      getCategoryFromPrices(),
+    ]);
+  const sellerTypeLabel: Record<string, string> = {
+    BOOSTER: tsl('typeBooster'),
+    SUPPLIER: tsl('typeSupplier'),
+    COACH: tsl('typeCoach'),
+    TEAM: tsl('typeTeam'),
+  };
   const featured = listings.slice(0, 6);
   const tickerItems = listings
     .slice(0, 8)
@@ -75,6 +93,16 @@ export default async function HomePage({ params }: Props) {
     title: t(`step${n}Title`),
     desc: t(`step${n}Desc`),
   }));
+  const deliveryName: Record<string, string> = {
+    PARTY_PLAY: td('partyPlayName'),
+    TRADE: td('tradeName'),
+    SESSION: td('sessionName'),
+  };
+  const deliveryDesc: Record<string, string> = {
+    PARTY_PLAY: td('partyPlayDesc'),
+    TRADE: td('tradeDesc'),
+    SESSION: td('sessionDesc'),
+  };
   const guards = [
     { icon: ShieldCheck, title: t('guardEscrowTitle'), desc: t('guardEscrowDesc') },
     { icon: RotateCcw, title: t('guardMoneyTitle'), desc: t('guardMoneyDesc') },
@@ -268,6 +296,25 @@ export default async function HomePage({ params }: Props) {
         </div>
       </section>
 
+      {/* How delivery works */}
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <Reveal>
+          <SectionHeading kicker={td('kicker')} title={td('title')} sub={td('subtitle')} />
+        </Reveal>
+        <Stagger className="mt-8 grid gap-4 sm:grid-cols-3">
+          {FULFILLMENT_KEYS.map((k) => (
+            <StaggerItem key={k}>
+              <FulfillmentCard
+                method={k}
+                name={deliveryName[k]}
+                desc={deliveryDesc[k]}
+                safeBadge={td('safeBadge')}
+              />
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </section>
+
       {/* Trust & Security */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <Reveal>
@@ -316,6 +363,36 @@ export default async function HomePage({ params }: Props) {
         </Stagger>
       </section>
 
+      {/* Top sellers */}
+      {topSellers.length > 0 && (
+        <section className="border-y border-border bg-card/30">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <Reveal>
+              <SectionHeading
+                kicker={t('sellersKicker')}
+                title={t('sellersTitle')}
+                sub={t('sellersSubtitle')}
+              />
+            </Reveal>
+            <Stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {topSellers.map((s) => (
+                <StaggerItem key={s.id}>
+                  <SellerShowcaseCard
+                    name={s.displayName}
+                    typeLabel={sellerTypeLabel[s.type] ?? s.type}
+                    ratingAvg={s.ratingAvg}
+                    ratingCount={s.ratingCount}
+                    verified={s.kycStatus === 'VERIFIED'}
+                    servicesCount={s._count.listings}
+                    servicesLabel={t('sellersServices')}
+                  />
+                </StaggerItem>
+              ))}
+            </Stagger>
+          </div>
+        </section>
+      )}
+
       {/* Testimonials */}
       {reviews.length > 0 && (
         <section className="border-t border-border bg-card/30">
@@ -355,6 +432,33 @@ export default async function HomePage({ params }: Props) {
           </h2>
           <p className="mt-2 leading-relaxed text-muted-foreground">{t('leagueBody')}</p>
         </Reveal>
+      </section>
+
+      {/* What we cover */}
+      <section className="border-t border-border bg-card/30">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <Reveal>
+            <SectionHeading
+              kicker={t('coverKicker')}
+              title={t('coverTitle')}
+              sub={t('coverSubtitle')}
+            />
+          </Reveal>
+          <Stagger className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {categories.map((c) => (
+              <StaggerItem key={c.id}>
+                <CategoryBlurbCard
+                  slug={c.slug}
+                  name={locale === 'ru' ? c.nameRu : c.nameEn}
+                  blurb={tcat(c.slug)}
+                  fromCents={fromPrices[c.id]}
+                  fromLabel={tc('from')}
+                  locale={locale}
+                />
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
       </section>
 
       {/* FAQ */}

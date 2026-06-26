@@ -1,9 +1,12 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { TrustStrip } from "@/components/marketplace/trust-strip";
 
 export async function Footer() {
   const t = await getTranslations("Footer");
   const tr = await getTranslations("Trust");
+  const tg = await getTranslations("Guarantees");
+  const tn = await getTranslations("Nav");
 
   return (
     <footer className="mt-16 border-t border-border">
@@ -29,6 +32,27 @@ export async function Footer() {
               </span>
             ),
           )}
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-6 text-sm">
+          <Link
+            href="/guarantees"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {tg("link")}
+          </Link>
+          <Link
+            href="/catalog"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {tn("catalog")}
+          </Link>
+          <Link
+            href="/sell"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {tn("sell")}
+          </Link>
         </div>
 
         <div className="mt-6 flex flex-col gap-1.5 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">

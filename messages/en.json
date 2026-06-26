@@ -67,13 +67,59 @@
     "faqKicker": "FAQ",
     "hotKicker": "Limited time",
     "hotTitle": "Hot offers",
-    "hotSubtitle": "The best deals on right now."
+    "hotSubtitle": "The best deals on right now.",
+    "sellersKicker": "Top sellers",
+    "sellersTitle": "Trusted by players, verified by us",
+    "sellersSubtitle": "Every seller is ID-verified and rated by real buyers.",
+    "sellersServices": "active services",
+    "coverKicker": "What we cover",
+    "coverTitle": "Services for every part of PoE2",
+    "coverSubtitle": "From fresh-start currency to pinnacle boss carries — pick what you need."
   },
   "Trust": {
     "escrow": "Escrow-protected",
     "moneyBack": "100% money-back",
     "verified": "Verified sellers",
     "chat": "In-order chat"
+  },
+  "Delivery": {
+    "kicker": "Delivery",
+    "title": "How your order is delivered",
+    "subtitle": "Pick the method that fits the service — your account stays yours, no sharing.",
+    "safeBadge": "No account sharing",
+    "partyPlayName": "Party play",
+    "partyPlayDesc": "The booster joins your party and plays alongside you — your account stays in your hands.",
+    "tradeName": "In-game trade",
+    "tradeDesc": "Currency and items are handed over through a normal in-game trade, usually within minutes.",
+    "sessionName": "Coaching session",
+    "sessionDesc": "A live 1-on-1 call for builds, mechanics and the economy — you keep playing your way."
+  },
+  "Guarantees": {
+    "kicker": "Guarantees",
+    "title": "Every order is protected",
+    "subtitle": "Escrow, refunds, verified sellers and fair disputes — the safety that earns our 15% fee.",
+    "escrowTitle": "Escrow protection",
+    "escrowDesc": "Your payment is held safely and only released to the seller once you confirm the work is done.",
+    "moneyBackTitle": "100% money-back",
+    "moneyBackDesc": "If an order isn't delivered as described, you get a full refund through our dispute process.",
+    "verifiedTitle": "Verified sellers",
+    "verifiedDesc": "Every seller passes ID verification and builds a public rating before they can take your order.",
+    "disputeTitle": "Fair dispute resolution",
+    "disputeDesc": "Stuck? Open a dispute — our moderators review the evidence and decide fairly: refund or release.",
+    "pageTitle": "Our guarantees",
+    "pageIntro": "Buying game services should feel as safe as any online store. Here's exactly how we protect every order.",
+    "browseCta": "Browse services",
+    "link": "Guarantees"
+  },
+  "Categories": {
+    "currency": "Divine, Exalted and Chaos orbs delivered by in-game trade — stock up without the grind.",
+    "items": "Build-enabling uniques and crafted gear, handed over safely through trade.",
+    "leveling": "Campaign and level boosts — skip the slog and jump straight to maps and endgame.",
+    "carries": "Pinnacle and boss carries by experienced players — party-play and account-safe.",
+    "atlas": "Atlas progression, Waystone farming and map clears to open up your endgame.",
+    "challenges": "League challenge and Ascendancy trial completions for the rewards you want.",
+    "crafting": "Custom crafting to spec — tell a crafter your target and get the item built.",
+    "coaching": "1-on-1 coaching on builds, mechanics and economy from players who know the meta."
   },
   "Footer": {
     "tagline": "The specialist marketplace for Path of Exile 2.",

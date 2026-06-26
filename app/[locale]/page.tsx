@@ -10,6 +10,7 @@ import {
   Swords,
   Trophy,
   Hammer,
+  Package,
 } from 'lucide-react';
 import {
   getCatalog,
@@ -19,6 +20,7 @@ import {
   getHotOffers,
   getTopSellers,
   getCategoryFromPrices,
+  getBundles,
 } from '@/lib/sellers/queries';
 import { Link } from '@/i18n/navigation';
 import { buttonVariants } from '@/components/ui/button';
@@ -50,16 +52,25 @@ export default async function HomePage({ params }: Props) {
   const tsl = await getTranslations('Seller');
   const tcat = await getTranslations('Categories');
 
-  const [categories, listings, reviews, reviewStats, hotOffers, topSellers, fromPrices] =
-    await Promise.all([
-      getCategories(),
-      getCatalog(),
-      getFeaturedReviews(6),
-      getReviewStats(),
-      getHotOffers(4),
-      getTopSellers(4),
-      getCategoryFromPrices(),
-    ]);
+  const [
+    categories,
+    listings,
+    reviews,
+    reviewStats,
+    hotOffers,
+    topSellers,
+    fromPrices,
+    bundles,
+  ] = await Promise.all([
+    getCategories(),
+    getCatalog(),
+    getFeaturedReviews(6),
+    getReviewStats(),
+    getHotOffers(4),
+    getTopSellers(4),
+    getCategoryFromPrices(),
+    getBundles(3),
+  ]);
   const sellerTypeLabel: Record<string, string> = {
     BOOSTER: tsl('typeBooster'),
     SUPPLIER: tsl('typeSupplier'),
@@ -243,6 +254,35 @@ export default async function HomePage({ params }: Props) {
               ))}
             </Stagger>
           </div>
+        </section>
+      )}
+
+      {/* Bundles */}
+      {bundles.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <Reveal>
+            <SectionHeading
+              kicker={t('bundlesKicker')}
+              title={t('bundlesTitle')}
+              sub={t('bundlesSubtitle')}
+            />
+          </Reveal>
+          <Stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {bundles.map((l) => (
+              <StaggerItem key={l.id} className="relative">
+                <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground shadow-[0_6px_20px_-8px_rgba(123,97,255,0.7)]">
+                  <Package className="size-3" />
+                  {t('bundlesBadge')}
+                </span>
+                <ListingCard
+                  listing={l}
+                  locale={locale}
+                  labels={cardLabels}
+                  badgeLabels={badgeLabels}
+                />
+              </StaggerItem>
+            ))}
+          </Stagger>
         </section>
       )}
 

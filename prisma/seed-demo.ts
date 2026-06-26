@@ -50,6 +50,7 @@ type ListingSeed = {
   platform: 'PC' | 'PS5' | 'XBOX';
   leagueMode: 'SOFTCORE' | 'HARDCORE' | 'SSF_SOFTCORE' | 'SSF_HARDCORE';
   badge?: 'HOT' | 'SALE' | 'NEW' | 'BEST_VALUE';
+  kind?: 'SERVICE' | 'BUNDLE';
   highlightsEn: string[];
   highlightsRu: string[];
   tiers?: TierSeed[];
@@ -172,6 +173,16 @@ const listings: ListingSeed[] = [
     highlightsRu: ['В наличии', 'Доставка трейдом ≤1ч', 'Ключевые предметы под билд'],
     review: { rating: 4, bodyEn: 'Had the unique I needed in stock. Quick and easy.' },
   },
+  {
+    key: 'bundle', seller: 'vault', categorySlug: 'currency', kind: 'BUNDLE',
+    titleEn: 'League starter bundle', titleRu: 'Стартовый набор лиги',
+    descriptionEn: 'Hit the ground running: a Divine + Exalted currency pack and your first pinnacle boss carry — bundled at a discount versus buying them separately.',
+    descriptionRu: 'Уверенный старт: пак валюты Divine + Exalted и первое карри пинакл-босса — в наборе со скидкой по сравнению с покупкой по отдельности.',
+    price: 79.99, compareAt: 99.99, etaHours: 4, fulfillment: 'TRADE', platform: 'PC', leagueMode: 'SOFTCORE',
+    highlightsEn: ['Divine + Exalted currency pack', 'One pinnacle boss carry', 'Save vs buying separately'],
+    highlightsRu: ['Пак валюты Divine + Exalted', 'Одно карри пинакл-босса', 'Выгоднее, чем по отдельности'],
+    review: { rating: 5, bodyEn: 'Great value — currency and a carry in one go. Smooth.' },
+  },
 ];
 
 async function main() {
@@ -222,6 +233,7 @@ async function main() {
       currency: 'eur', etaHours: l.etaHours,
       fulfillment: l.fulfillment, platform: l.platform, league: LEAGUE, leagueMode: l.leagueMode,
       badge: l.badge ?? null,
+      kind: l.kind ?? 'SERVICE',
       highlightsEn: l.highlightsEn, highlightsRu: l.highlightsRu,
       active: true,
     };

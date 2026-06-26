@@ -59,6 +59,11 @@ enum ListingBadge {
   BEST_VALUE
 }
 
+enum ListingKind {
+  SERVICE
+  BUNDLE // a discounted package of services/items (model A: a flagged listing)
+}
+
 enum OrderStatus {
   CREATED
   PAID
@@ -135,6 +140,7 @@ model Listing {
   league        String
   leagueMode    LeagueMode
   badge         ListingBadge?
+  kind          ListingKind   @default(SERVICE)
   highlightsEn  String[]      @default([]) // benefit bullets
   highlightsRu  String[]      @default([])
   heroImageUrl  String? // optional owned art override; UI generates art when null

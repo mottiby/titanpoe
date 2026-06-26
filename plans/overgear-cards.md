@@ -51,10 +51,10 @@ ActivityTicker, FAQ, escrow how-it-works, payment-row, Footer-nav.
 Таймеры/фейк-дефицит (анти-паттерн), account-sales (ToS-риск), blog/guides (отдельная инициатива).
 
 ## Прогресс
-- [ ] ① FulfillmentMethodCard
-- [ ] ② Guarantees + /guarantees
-- [ ] ④ CategoryBlurb
-- [ ] ③ TopSellers showcase
-- [ ] ⑥ Game/League cards
-- [ ] ⑦ Support CTA
-- [ ] ⑤ Bundles (после выбора A/B)
+- [x] ① FulfillmentMethodCard
+- [x] ② Guarantees + /guarantees
+- [x] ④ CategoryBlurb
+- [x] ③ TopSellers showcase
+- [x] ⑥ Game/League (endgame) cards
+- [ ] ⑦ Support CTA — отложено (нужен реальный канал поддержки)
+- [x] ⑤ Bundles — модель A (Listing.kind), миграция `20260626120000_listing_kind` применена к Neon, демо-бандл засеян

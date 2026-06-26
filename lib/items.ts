@@ -16,6 +16,7 @@ const byListingId: Record<string, string> = {
   'demo-listing-craft': 'gear-crafting',
   'demo-listing-coaching': 'coaching',
   'demo-listing-unique': 'headhunter',
+  'demo-listing-bundle': 'divine-orbs',
 };
 
 // Category fallback (also used by category cards / banners) → item slug.

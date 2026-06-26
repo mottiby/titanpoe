@@ -95,6 +95,16 @@ export function getHotOffers(take = 4) {
   });
 }
 
+/** Bundle listings (kind = BUNDLE) — discounted packages for the home section. */
+export function getBundles(take = 3) {
+  return db.listing.findMany({
+    where: { active: true, kind: 'BUNDLE' },
+    include: { category: true, seller: true, tiers: { select: { priceCents: true } } },
+    orderBy: { createdAt: 'desc' },
+    take,
+  });
+}
+
 export function getRelatedListings(categoryId: string, excludeId: string, take = 3) {
   return db.listing.findMany({
     where: { active: true, categoryId, id: { not: excludeId } },

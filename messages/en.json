@@ -85,7 +85,11 @@
     "endgame3Title": "Trials of Ascendancy",
     "endgame3Desc": "Sekhemas and Chaos trials cleared so you can lock in your ascendancy.",
     "endgame4Title": "Crafting & economy",
-    "endgame4Desc": "Custom crafts and bulk currency to fund the build you actually want."
+    "endgame4Desc": "Custom crafts and bulk currency to fund the build you actually want.",
+    "bundlesKicker": "Bundles",
+    "bundlesTitle": "Save more with bundles",
+    "bundlesSubtitle": "Packaged services and currency for less than buying them separately.",
+    "bundlesBadge": "Bundle"
   },
   "Trust": {
     "escrow": "Escrow-protected",
